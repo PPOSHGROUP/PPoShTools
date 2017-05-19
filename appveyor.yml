@@ -4,6 +4,8 @@
 environment:
   PSGalleryNugetApiKey:
     secure: wH1ALRNiAuiA7dS5i4I5dPsQzuoCuV0yHf7Pe/HQn8BOJ/5wSdNqy4aa+N7J2kbn
+  GithubAuthToken:
+    secure: gN4n/aBQ95awEEv4QPGlV810lNHSqFpxFmXCCTj31wSpvadZ8SMtH9PrxlTYyb9j
 
 # Allow WMF5 (i.e. PowerShellGallery functionality)
 os: WMF 5
