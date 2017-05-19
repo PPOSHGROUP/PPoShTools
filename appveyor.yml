@@ -45,7 +45,7 @@ deploy:
       appveyor_repo_tag: true
 
 after_deploy:
-  - ps: Publish-Module -Path ($env:APPVEYOR_BUILD_FOLDER + '/PPoShTools/PPoShTools.psd1') -NuGetApiKey $env:PSGalleryNugetApiKey -Verbose -Force
+  - ps: Publish-Module -Path ($env:APPVEYOR_BUILD_FOLDER + '\PPoShTools\PPoShTools.psd1') -NuGetApiKey $env:PSGalleryNugetApiKey -Verbose -Force
     on:
       branch: master
       appveyor_repo_tag: true
