@@ -1,3 +1,18 @@
+if (-not ('LogLevel' -as [System.Type])) {
+    $logLevelDef = "
+    public enum LogLevel : int
+    {
+        DEBUG=0,
+        INFO,
+        WARN,
+        ERROR
+    }
+    "
+
+    Add-Type -TypeDefinition $logLevelDef
+}
+
+
 $Script:LogConfiguration = [PSCustomObject]@{
     # Logging level threshold - available values: DEBUG, INFO, WARN, ERROR
     LogLevel = [LogLevel]::Info;
