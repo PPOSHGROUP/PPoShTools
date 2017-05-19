@@ -31,8 +31,7 @@ build_script:
   - ps: . .\build.ps1
 
 artifacts:
-  - path: PPoShTools/**
-    name: PPoShTools
+  - path: PPoShTools
 
 deploy:
   - provider: GitHub

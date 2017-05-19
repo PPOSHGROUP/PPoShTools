@@ -55,20 +55,6 @@ Task Build -Depends StaticCodeAnalysis, Test {
     Update-Metadata -Path $env:BHPSModuleManifest
 }
 
-<#
-Task Deploy -Depends Init {
-    $lines
-
-    $Params = @{
-        Path = $ProjectRoot
-        Force = $true
-        Recurse = $false # We keep psdeploy artifacts, avoid deploying those : )
-        Verbose = $true
-    }
-    Invoke-PSDeploy @Params
-}
-#>
-
 Task StaticCodeAnalysis {
     if ($ENV:BHBuildSystem -eq 'AppVeyor') {
         Add-AppveyorTest -Name "PsScriptAnalyzer" -Outcome Running

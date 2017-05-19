@@ -64,7 +64,7 @@
             IgnoreOneLineBlock = $true
         }
 
-         PSUseConsistentWhitespace = @{
+        PSUseConsistentWhitespace = @{
             Enable = $true
             CheckOpenBrace = $true
             CheckOpenParen = $true
