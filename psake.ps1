@@ -55,6 +55,7 @@ Task Build -Depends StaticCodeAnalysis, Test {
     Update-Metadata -Path $env:BHPSModuleManifest
 }
 
+<#
 Task Deploy -Depends Init {
     $lines
 
@@ -66,6 +67,7 @@ Task Deploy -Depends Init {
     }
     Invoke-PSDeploy @Params
 }
+#>
 
 Task StaticCodeAnalysis {
     if ($ENV:BHBuildSystem -eq 'AppVeyor') {

@@ -2,8 +2,8 @@
 
 #Publish to PowerShell Gallery with this key
 environment:
-  NuGetApiKey:
-    secure: SecureNugetApiKeyComesHere
+  PSGalleryNugetApiKey:
+    secure: wH1ALRNiAuiA7dS5i4I5dPsQzuoCuV0yHf7Pe/HQn8BOJ/5wSdNqy4aa+N7J2kbn
 
 # Allow WMF5 (i.e. PowerShellGallery functionality)
 os: WMF 5
@@ -27,13 +27,24 @@ init:
       }
 
 
-build: false
-
-test_script:
+build_script:
   - ps: . .\build.ps1
 
-deploy_script:
-  - ps: . .\deploy.ps1
+artifacts:
+  - path: PPoShTools/**
+    name: PPoShTools
+
+deploy:
+  - provider: GitHub
+    auth_token: $(GithubAuthToken)
+    draft: false
+    prerelease: false
+    on:
+      branch: master
+      appveyor_repo_tag: true
+
+after_deploy:
+  - ps: Publish-Module -Path ($env:APPVEYOR_BUILD_FOLDER + '/PPoShTools/PPoShTools.psd1') -NuGetApiKey $env:PSGalleryNugetApiKey -Verbose -Force
     on:
       branch: master
       appveyor_repo_tag: true
