@@ -108,9 +108,7 @@ PrivateData = @{
 
         # ReleaseNotes of this module
         # ReleaseNotes = ''
-
     } # End of PSData hashtable
-
 } # End of PrivateData hashtable
 
 # HelpInfo URI of this module
@@ -118,7 +116,4 @@ PrivateData = @{
 
 # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
 # DefaultCommandPrefix = ''
-
 }
-
-

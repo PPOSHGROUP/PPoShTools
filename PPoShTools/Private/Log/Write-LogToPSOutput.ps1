@@ -1,22 +1,10 @@
 function Write-LogToPSOutput() {
     <#
     .SYNOPSIS
-    Outputs the Message using Write-Output function. Helper function.
+        Outputs the Message using Write-Output function. Helper function.
     
-    .PARAMETER Header
-    Message Header
-    
-    .PARAMETER Message
-    Message body
-    
-    .PARAMETER Severity
-    Severity
-
-    .PARAMETER PassThru
-    If enabled, all log output will be available as return value.
-
     .EXAMPLE
-    Write-LogToPSOutput -Header "Header" -Message "Message"
+        Write-LogToPSOutput -Header "Header" -Message "Message"
     #>
 
     [CmdletBinding()]

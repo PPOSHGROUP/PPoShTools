@@ -1,19 +1,10 @@
 function Write-LogToFile() {
     <#
     .SYNOPSIS
-    Outputs the Message to file. Helper function.
-
-    .PARAMETER Header
-    Message Header
-    
-    .PARAMETER Message
-    Message body
-    
-    .PARAMETER Severity
-    Severity
+        Outputs the Message to file. Helper function.
 
     .EXAMPLE
-    Write-LogToFile -Header "Header" -Message "Message" -Severity $Severity 
+        Write-LogToFile -Header "Header" -Message "Message" -Severity $Severity 
     #>
 
     [CmdletBinding()]

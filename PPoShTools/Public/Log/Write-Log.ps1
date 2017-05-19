@@ -1,80 +1,84 @@
 Function Write-Log {
     <#
     .SYNOPSIS
-    Writes a nicely formatted Message to stdout/file/event log.
+        Writes a nicely formatted Message to stdout/file/event log.
 
     .DESCRIPTION
-    It uses optional $Global:LogConfiguration object which describes logging configuration (see LogConfiguration.ps1).
+        It uses optional $Script:LogConfiguration object which describes logging configuration (see LogConfiguration.ps1).
 
-    .PARAMETER Error
-    If specified, an error will be logged.
-
-    .PARAMETER Warn
-    If specified, a warning will be logged.
-
-    .PARAMETER Info
-    If specified, an information will be logged.
-
-    .PARAMETER _debug
-    If specified, a debug Message will be logged.
-
-    .PARAMETER Emphasize
-    If set, the Message at console will be made more visible (using colors).
-
-    .PARAMETER NoHeader
-    If specified, Header information will not be logged (e.g. '[ERROR]: (function_name)').
-
-    .PARAMETER Indent
-    Additional indent (optional).
-
-    .PARAMETER Message
-    Message to output.
-
-    .PARAMETER PassThru
-    If enabled, all log output will be available as return value.
-
-    .PARAMETER CustomCallerInfo
-    Custom string containing caller information, used in logging exceptions.
+    .INPUTS
+        A string message to log.
 
     .EXAMPLE
-    Write-Log -Error "A disaster has occurred."
+        Write-Log -Info "Generating file test.txt."
+        [I] 2017-05-19 11:14:28 [hostName/userName]: (scriptName/commandName/1) Generating file test.txt.
+
+    .EXAMPLE
+        $Global.LogConfiguration.LogLevel = [LogLevel]::WARN
+        Write-Log -Info "Generating file test.txt."
+        <nothing will be logged>
+        Write-Log -Error "Failed to generate file test.txt."
+        [E] 2017-05-19 11:14:28 [hostName/userName]: (scriptName/commandName/1) Failed to generate file test.txt.
+
+    .EXAMPLE
+        $Global.LogConfiguration.LogFile = 'log.txt'
+        Write-Log -Info "Generating file test.txt."
+
+        Logs message to stdout and log.txt file.
+
+
+    .EXAMPLE
+        $Global.LogConfiguration.LogEventLogSource = 'log.txt'
+        $Global.LogConfiguration.LogEventLogThreshold = 'log.txt'
+        Write-Log -Info "Generating file test.txt."
     #>
     
     [CmdletBinding()]
     [OutputType([void])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", Scope="Function")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", Scope="Function")]
     param(       
+        # If specified, an error will be logged.
         [Parameter(Mandatory=$false)]
         [switch] 
         $Error = $false,
         
+        # If specified, a warning will be logged.
         [Parameter(Mandatory=$false)]
         [switch] 
         $Warn = $false,
         
+        # If specified, an info message will be logged (default).
         [Parameter(Mandatory=$false)]
         [switch] 
         $Info = $false,
         
+        # If specified, a debug message will be logged.
         [Parameter(Mandatory=$false)]
         [switch] 
         $_debug = $false,
         
+        # If set, the message at console will be emphasized using colors.
         [Parameter(Mandatory=$false)]
         [switch] 
         $Emphasize = $false,
         
+        # If specified, header information will not be logged (e.g. '[ERROR]: (function_name)').
         [Parameter(Mandatory=$false)]
         [switch] 
         $NoHeader = $false,
 
+        # Message to output.
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [string[]]
         $Message,
 
+        # Additional indent.
         [Parameter(Mandatory=$false)]
         [int]
         $Indent = 0,
 
+        # If enabled, all log output will be available as return value (will use Write-Output instead of Write-Host).
         [Parameter(Mandatory=$false)]
         [switch] 
         $PassThru = $false
@@ -84,18 +88,21 @@ Function Write-Log {
         if ($Error) {
             $severity = [LogLevel]::Error;
             $severityChar = 'E'
-        } elseif ($warn) {
+        } 
+        elseif ($warn) {
             $severity = [LogLevel]::Warn;
             $severityChar = 'W'
-        } elseif ($_debug) {
+        } 
+        elseif ($_debug) {
             $severity = [LogLevel]::Debug;
             $severityChar = 'D'
-        } else {
+        } 
+        else {
             $severity = [LogLevel]::Info;
             $severityChar = 'I'
         }
 
-        if ($severity -lt $Global:LogConfiguration.LogLevel) {
+        if ($severity -lt $Script:LogConfiguration.LogLevel) {
             return
         }
 
@@ -104,7 +111,8 @@ Function Write-Log {
         $callerCommandName = $callerInfo.InvocationInfo.MyCommand.Name
         if ($callerInfo.ScriptName) {
             $callerScriptName = Split-Path -Leaf $callerInfo.ScriptName
-        } else {
+        } 
+        else {
             $callerScriptName = 'no script';
         }
         $callerLineNumber = $callerInfo.ScriptLineNumber
@@ -112,12 +120,14 @@ Function Write-Log {
         
         if ($NoHeader) {
             $outputHeader = ""
-        } else {
+        } 
+        else {
             $currentHostname = [system.environment]::MachineName
             $currentUsername = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
             if (Get-Variable -Name PSSenderInfo -ErrorAction SilentlyContinue) {
                 $remotingFlag = '[R] '
-            } else {
+            } 
+            else {
                 $remotingFlag = ''
             }
             $outputHeader = "[$severityChar] $timestamp ${remotingFlag}[$currentHostname/${currentUsername}]: ($callerInfoString) "
@@ -146,7 +156,6 @@ Function Write-Log {
             [void](New-Item -Path "error.txt" -ItemType file -Value $Message -Force)
             throw "Logging failure"
         }
-
     }
 
     End {

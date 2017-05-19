@@ -1,8 +1,15 @@
 function Write-ErrorRecord {
     <#
         .SYNOPSIS
-    
-        Logs ErrorRecord message, including script StackTrace and exception StackTrace.
+            Logs ErrorRecord message, including script StackTrace and exception StackTrace.
+
+        .EXAMPLE
+            $Global:ErrorActionPreference = 'Stop'
+            try {
+                ...
+            } catch {
+                Write-ErrorRecord
+            }
     #>
 
     [CmdletBinding()]
@@ -20,7 +27,8 @@ function Write-ErrorRecord {
         $callerCommandName = $callerInfo.InvocationInfo.MyCommand.Name
         if ($callerInfo.ScriptName) {
             $callerScriptName = Split-Path -Leaf $callerInfo.ScriptName
-        } else {
+        }
+        else {
             $callerScriptName = '';
         }
         $callerLineNumber = $callerInfo.ScriptLineNumber

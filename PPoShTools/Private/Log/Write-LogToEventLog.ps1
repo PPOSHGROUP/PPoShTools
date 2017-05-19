@@ -1,22 +1,11 @@
 function Write-LogToEventLog() {
     <#
     .SYNOPSIS
-    Outputs the Message to event log.
+        Outputs the Message to event log.
     
     .DESCRIPTION
-    Creates new event log source if not exists and $LogConfiguration.LogEventLogCreateSourceIfNotExists is set. Helper function.
+        Creates new event log source if not exists.
 
-     .PARAMETER Header
-    Message Header
-    
-    .PARAMETER Message
-    Message body
-    
-    .PARAMETER Severity
-    Severity
-
-    .EXAMPLE
-    Write-LogToEventLog  -Header "Header" -Message "Message" -Severity $Severity 
     #>
 
     [CmdletBinding()]
@@ -38,13 +27,15 @@ function Write-LogToEventLog() {
         
     if ($Severity -eq [LogLevel]::ERROR) {
         $entryType = [System.Diagnostics.EventLogEntryType]::Error
-    } elseif ($Severity -eq [LogLevel]::WARN) {
+    } 
+    elseif ($Severity -eq [LogLevel]::WARN) {
         $entryType = [System.Diagnostics.EventLogEntryType]::Warning
-    } else {
+    } 
+    else {
         $entryType = [System.Diagnostics.EventLogEntryType]::Information
     }
 
-    if ($LogConfiguration.LogEventLogCreateSourceIfNotExists -and ![System.Diagnostics.EventLog]::SourceExists($LogConfiguration.LogEventLogSource)) {
+    if (![System.Diagnostics.EventLog]::SourceExists($LogConfiguration.LogEventLogSource)) {
         [void](New-EventLog -LogName Application -Source $LogConfiguration.LogEventLogSource)
     }
 
@@ -54,5 +45,4 @@ function Write-LogToEventLog() {
         [void]($strBuilder.Append($msg).Append("`r`n"))
     }
     Write-EventLog -LogName Application -Source $LogConfiguration.LogEventLogSource -EntryType $entryType -EventID 1 -Message ($strBuilder.ToString())
-    
 }

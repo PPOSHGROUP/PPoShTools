@@ -1,26 +1,15 @@
 function Write-LogToStdOut() {
     <#
     .SYNOPSIS
-    Outputs the Message to stdout using colors.
+        Outputs the Message to stdout using colors.
     
-    .PARAMETER Header
-    Message Header
-    
-    .PARAMETER Message
-    Message body
-    
-    .PARAMETER Severity
-    Severity
-
-    .PARAMETER Emphasize
-    Emphasize
-
     .EXAMPLE
-    Write-LogToStdOut -Header "Header" -Message "Message" -Severity $Severity 
+        Write-LogToStdOut -Header "Header" -Message "Message" -Severity $Severity 
     #>
 
     [CmdletBinding()]
     [OutputType([void])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", Scope="Function")]
     param(
         [string] 
         $Header, 

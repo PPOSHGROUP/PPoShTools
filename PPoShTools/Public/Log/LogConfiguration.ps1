@@ -1,4 +1,4 @@
-$Global:LogConfiguration = [PSCustomObject]@{
+$Script:LogConfiguration = [PSCustomObject]@{
     # Logging level threshold - available values: DEBUG, INFO, WARN, ERROR
     LogLevel = [LogLevel]::Info;
 
