@@ -39,7 +39,7 @@ else {
     "`t* You are in a known build system (Current: $ENV:BHBuildSystem)`n" +
     "`t* You are committing to the master branch (Current: $ENV:BHBranchName) `n" +
     "`t* Your commit message includes !deploy (Current: $ENV:BHCommitMessage)" |
-        Write-Log
+        Write-Verbose
 }
 
 # Publish to AppVeyor if we're in AppVeyor

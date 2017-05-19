@@ -14,7 +14,7 @@ $lines = '----------------------------------------------------------------------
 
 # Tasks
 
-Task Default -Depends Deploy
+Task Default -Depends Build
 
 Task Init {
     $lines
@@ -45,7 +45,7 @@ Task Test -Depends Init  {
     "`n"
 }
 
-Task Build -Depends Test {
+Task Build -Depends StaticCodeAnalysis, Test {
     $lines
     
     # Load the module, read the exported functions, update the psd1 FunctionsToExport
@@ -55,7 +55,7 @@ Task Build -Depends Test {
     Update-Metadata -Path $env:BHPSModuleManifest
 }
 
-Task Deploy -Depends Build {
+Task Deploy -Depends Init {
     $lines
 
     $Params = @{
@@ -67,7 +67,7 @@ Task Deploy -Depends Build {
     Invoke-PSDeploy @Params
 }
 
-Task StaticCodeAnalysis  {
+Task StaticCodeAnalysis {
     if ($ENV:BHBuildSystem -eq 'AppVeyor') {
         Add-AppveyorTest -Name "PsScriptAnalyzer" -Outcome Running
     }
