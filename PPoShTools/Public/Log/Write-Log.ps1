@@ -142,18 +142,18 @@ Function Write-Log {
             Write-LogToPSOutput -Header $Header -Message $Message -Severity $Severity -PassThru:$PassThru
         } catch {
             $exception = $_.Exception
-            $Message = "Writing to log failed - script will terminate.`r`n"
+            $msg = "Writing to log failed - script will terminate.`r`n"
             $currentUsername = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
             if ($LogConfiguration.LogFile) {
-                $Message += "`r`nPlease ensure that current user ('{0}') has access to file '{1}' or change the path to log file in Global:`$LogConfiguration.LogFile." -f $currentUsername, $LogConfiguration.LogFile
+                $msg += "`r`nPlease ensure that current user ('{0}') has access to file '{1}' or change the path to log file in Global:`$LogConfiguration.LogFile." -f $currentUsername, $LogConfiguration.LogFile
             }
             if ($LogConfiguration.LogEventLogSource) {
-                $Message += "`r`nPlease ensure that current user ('{0}') is able to create Event Log sources or create the source manually." -f $currentUsername
+                $msg += "`r`nPlease ensure that current user ('{0}') is able to create Event Log sources or create the source manually." -f $currentUsername
             }
         
-            $Message += "`n" + ($_ | Format-List -Force | Out-String) + ($exception | Format-List -Force | Out-String)
-            Write-Host $Message
-            [void](New-Item -Path "error.txt" -ItemType file -Value $Message -Force)
+            $msg += "`n" + ($_ | Format-List -Force | Out-String) + ($exception | Format-List -Force | Out-String)
+            Write-Host $msg
+            [void](New-Item -Path "error.txt" -ItemType file -Value $msg -Force)
             throw "Logging failure"
         }
     }
