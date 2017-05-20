@@ -30,7 +30,7 @@ init:
 
 
 build_script:
-  - ps: . .\build.ps1
+  - ps: . .\Build\build.ps1
 
 artifacts:
   - path: PPoShTools
