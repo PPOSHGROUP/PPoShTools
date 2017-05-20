@@ -188,7 +188,8 @@ function New-ConnectionParameters {
     }
     if ($Credential) {
         $userName = $Credential.UserName
-    } else {
+    } 
+    else {
         $userName = ""
     }
 
