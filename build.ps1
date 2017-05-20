@@ -1,7 +1,9 @@
 ﻿$Global:ErrorActionPreference = 'Stop'
 $Global:VerbosePreference = 'Continue'
-Install-Module PSDepend
 
+Get-PackageProvider -Name NuGet -ForceBootstrap | Out-Null
+
+Install-Module PSDepend
 Invoke-PSDepend -Force
 
 Set-BuildEnvironment -Force
