@@ -174,7 +174,7 @@ function New-ConnectionParameters {
         }
         
         $msDeployDestinationString = "computerName=`"$url`""
-        if ($AuthType) {
+        if ($Authentication) {
            $msDeployDestinationString += ",authType=`"$Authentication`""
         }
         if ($Credential) {
