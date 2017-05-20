@@ -22,11 +22,6 @@ init:
         Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME"
         $env:packageVersion = "$env:APPVEYOR_REPO_TAG_NAME" 
       }
-      else
-      {
-        Update-AppveyorBuild -Version "dev-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
-        $env:packageVersion = "0.0.1-dev"
-      }
 
 install:
   - cmd: git submodule update --init --recursive   
