@@ -94,8 +94,10 @@ function New-ConnectionParameters {
         $CrossDomain
     )
 
+    $psRemotingParams = @{}
+    $cimSessionParams = @{}
     if ($RemotingMode -eq 'PSRemoting') {
-        $psRemotingParams = @{}
+        
         if ($Nodes) {
             $psRemotingParams['ComputerName'] = $Nodes
         }
@@ -120,7 +122,6 @@ function New-ConnectionParameters {
             $psRemotingParams['SessionOption'] = New-PSSessionOption -SkipCACheck -SkipCNCheck -SkipRevocationCheck
         }
 
-        $cimSessionParams = @{}
         if ($Nodes) {
             $cimSessionParams['ComputerName'] = $Nodes
         }
@@ -179,9 +180,9 @@ function New-ConnectionParameters {
         }
         if ($Credential) {
            $msDeployDestinationString += ",userName=`"$($Credential.UserName)`""
-        }
-        if ($Credential.GetNetworkCredential().Password) {
-           $msDeployDestinationString += ",password=`"$($Credential.GetNetworkCredential().Password)`""
+           if ($Credential.GetNetworkCredential().Password) {
+              $msDeployDestinationString += ",password=`"$($Credential.GetNetworkCredential().Password)`""
+            }
         }
         $msDeployDestinationString += (",includeAcls=false")
         $msDeployDestinationString += " -allowUntrusted"
