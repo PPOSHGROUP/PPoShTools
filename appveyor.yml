@@ -15,7 +15,7 @@ skip_commits:
     - README.md
 
 init:
-  # Set "build version number" to "short-commit-hash" or when tagged to "tag name"
+  # Set "build version number" to "tag name" (when tagged)
   - ps: >-
       if ($env:APPVEYOR_REPO_TAG -eq "true")
       {
@@ -35,7 +35,7 @@ artifacts:
 deploy:
   - provider: GitHub
     auth_token: $(GithubAuthToken)
-    draft: false
+    draft: true
     prerelease: false
     on:
       branch: master
