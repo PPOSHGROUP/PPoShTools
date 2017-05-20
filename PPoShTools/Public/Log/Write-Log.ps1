@@ -35,8 +35,8 @@ Function Write-Log {
     
     [CmdletBinding()]
     [OutputType([void])]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", Scope="Function")]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", Scope="Function")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", '')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", '')]
     param(       
         # If specified, an error will be logged.
         [Parameter(Mandatory=$false)]

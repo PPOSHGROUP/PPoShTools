@@ -10,7 +10,7 @@ function Stop-ProcessForcefully {
 
     [CmdletBinding()]
     [OutputType([void])]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWMICmdlet", Scope="Function")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWMICmdlet", '')]
     param(
         # Process object.
         [Parameter(Mandatory=$true)]

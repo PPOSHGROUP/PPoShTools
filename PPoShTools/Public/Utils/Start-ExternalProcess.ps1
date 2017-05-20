@@ -13,7 +13,7 @@ function Start-ExternalProcess {
     #>
     [CmdletBinding()]
     [OutputType([int])]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidDefaultValueSwitchParameter", Scope="Function")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidDefaultValueSwitchParameter", '')]
     param(
         # Command to run.
         [Parameter(Mandatory=$true)]

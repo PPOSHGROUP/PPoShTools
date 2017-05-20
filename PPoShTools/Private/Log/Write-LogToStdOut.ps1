@@ -9,7 +9,7 @@ function Write-LogToStdOut() {
 
     [CmdletBinding()]
     [OutputType([void])]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", Scope="Function")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", '')]
     param(
         [string] 
         $Header, 
