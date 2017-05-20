@@ -140,6 +140,7 @@ function New-ConnectionParameters {
         if ($Protocol -eq 'HTTPS') {
             $cimSessionParams['SessionOption'] = New-CimSessionOption -UseSsl -SkipCACheck -SkipCNCheck -SkipRevocationCheck
         }
+        $msDeployDestinationString = $null
     } 
     else {
          if ($Nodes.Count -ne 1) {
@@ -171,17 +172,24 @@ function New-ConnectionParameters {
             }
             $url = "{0}://{1}:{2}/MsDeployAgentService" -f $urlProtocol, $Nodes[0], $Port
         }
-        $msDeployDestinationStringParams = @{ Url = $url; Offline = $false }
-
+        
+        $msDeployDestinationString = "computerName=`"$url`""
+        if ($AuthType) {
+           $msDeployDestinationString += ",authType=`"$Authentication`""
+        }
         if ($Credential) {
-            $msDeployDestinationStringParams.Add("UserName", $Credential.UserName)
-            $msDeployDestinationStringParams.Add("Password", $Credential.GetNetworkCredential().Password)
+           $msDeployDestinationString += ",userName=`"$($Credential.UserName)`""
         }
-
-        if ($Authentication) {
-            $msDeployDestinationStringParams.Add("AuthType", $Authentication)
+        if ($Credential.GetNetworkCredential().Password) {
+           $msDeployDestinationString += ",password=`"$($Credential.GetNetworkCredential().Password)`""
         }
-        $msDeployDestinationString = New-MsDeployDestinationString @msDeployDestinationStringParams
+        $msDeployDestinationString += (",includeAcls=false")
+        $msDeployDestinationString += " -allowUntrusted"
+    }
+    if ($Credential) {
+        $userName = $Credential.UserName
+    } else {
+        $userName = ""
     }
 
     return @{
@@ -196,6 +204,6 @@ function New-ConnectionParameters {
         PSSessionParams = $psRemotingParams
         CimSessionParams = $cimSessionParams
         MsDeployDestinationString = $msDeployDestinationString
-        OptionsAsString = "Credential: '$($Credential.UserName)', RemotingMode: '$RemotingMode', Auth: '$Authentication', Protocol: '$Protocol', Port: '$Port'"
+        OptionsAsString = "Credential: '$userName', RemotingMode: '$RemotingMode', Auth: '$Authentication', Protocol: '$Protocol', Port: '$Port'"
     }
 }

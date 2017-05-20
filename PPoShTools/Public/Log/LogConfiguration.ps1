@@ -2,10 +2,10 @@ if (-not ('LogLevel' -as [System.Type])) {
     $logLevelDef = "
     public enum LogLevel : int
     {
-        DEBUG=0,
-        INFO,
-        WARN,
-        ERROR
+        Debug=0,
+        Info,
+        Warn,
+        Error
     }
     "
 
