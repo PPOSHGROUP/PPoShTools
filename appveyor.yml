@@ -15,22 +15,23 @@ skip_commits:
     - README.md
 
 init:
-  # Set "build version number" to "tag name" (when tagged)
+  # Set "build version number" to "tag name" (when tagged) and set $env:projectName to the name of the repository
   - ps: >-
       if ($env:APPVEYOR_REPO_TAG -eq "true")
       {
         Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME"
-        $env:packageVersion = "$env:APPVEYOR_REPO_TAG_NAME" 
+        $env:PackageVersion = "$env:APPVEYOR_REPO_TAG_NAME" 
       }
-
+      $env:ProjectName = ($env:APPVEYOR_REPO_NAME -split '/')[1]
+      
 install:
-  - cmd: git submodule update --init --recursive   
+  - cmd: git submodule update --init --recursive  
 
 build_script:
-  - ps: . .\Build\build.ps1
+  - ps: . .\build\build.ps1
 
 artifacts:
-  - path: PPoShTools
+  - path: $(ProjectName)
 
 deploy:
   - provider: GitHub
@@ -42,7 +43,7 @@ deploy:
       appveyor_repo_tag: true
 
 after_deploy:
-  - ps: Publish-Module -Path ($env:APPVEYOR_BUILD_FOLDER + '\PPoShTools') -NuGetApiKey $env:PSGalleryNugetApiKey -Verbose -Force
+  - ps: Publish-Module -Path (Join-Path -Path $env:APPVEYOR_BUILD_FOLDER -ChildPath $env:ProjectName) -NuGetApiKey $env:PSGalleryNugetApiKey -Verbose -Force
     on:
       branch: master
       appveyor_repo_tag: true
