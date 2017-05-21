@@ -15,16 +15,32 @@ function Write-ErrorRecord {
     [CmdletBinding()]
     [OutputType([void])]
     param(
+        # Error record to log. If null, $_ will be used.
+        [Parameter(Mandatory=$false)]
+        [System.Management.Automation.ErrorRecord]
+        $ErrorRecord
     )
     
-    $ErrorRecord = $_
-    $exception = $ErrorRecord.Exception
+    if (!$ErrorRecord -and (Test-Path Variable:_)) {
+        $ErrorRecord = $_
+    }
+    if ($ErrorRecord -and $ErrorRecord.Exception) {
+        $exception = $ErrorRecord.Exception
+    } 
+    else {
+        $exception = $null
+    }
 
     $messageToLog = ''
 
     if ($ErrorRecord -and $ErrorRecord.InvocationInfo) {
         $callerInfo = $ErrorRecord.InvocationInfo
-        $callerCommandName = $callerInfo.InvocationInfo.MyCommand.Name
+        if ($callerInfo.MyCommand -and $callerInfo.MyCommand.Name) {
+            $callerCommandName = $callerInfo.MyCommand.Name
+        } 
+        else {
+            $callerCommandName = ''
+        }
         if ($callerInfo.ScriptName) {
             $callerScriptName = Split-Path -Leaf $callerInfo.ScriptName
         }
@@ -44,10 +60,10 @@ function Write-ErrorRecord {
     }
     if (!$ErrorRecord -or !$ErrorRecord.ScriptStackTrace) {
         $psStack = Get-PSCallStack
-        for ($i = 2; $i -lt $psStack.Length; $i++) {
+        for ($i = 1; $i -lt $psStack.Length; $i++) {
             $messageToLog += ("Stack trace {0}: location={1}, command={2}, arguments={3}`r`n " -f ($i-1), $psStack[$i].Location, $psStack[$i].Command, $psStack[$i].Arguments)
         }
     }
    
-    Write-Error -Message $messageToLog
+    Write-Error -Message $messageToLog -ErrorAction Continue
 }

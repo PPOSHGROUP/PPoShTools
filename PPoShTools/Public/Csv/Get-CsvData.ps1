@@ -159,7 +159,7 @@ function Get-CsvData {
                 try { 
                     $errors = Invoke-Command -ScriptBlock $CsvValidationRules -ArgumentList $row, $rowNum
                 } catch {
-                    Write-ErrorRecord -ErrorRecord $_
+                    Write-ErrorRecord
                 }
                 foreach ($err in $errors) {
                     [void]($errorArray.Add("Validation error in row ${rowNum}: $err"))
