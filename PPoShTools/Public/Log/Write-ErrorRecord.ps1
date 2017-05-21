@@ -66,4 +66,5 @@ function Write-ErrorRecord {
     }
    
     Write-Error -Message $messageToLog -ErrorAction Continue
+    throw
 }
