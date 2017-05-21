@@ -21,9 +21,13 @@ function Write-LogToEventLog() {
         $Severity
     )
     
-    if ($LogConfiguration -and !(Test-LogSeverity -MessageSeverity $Severity -ConfigSeverity $LogConfiguration.LogEventLogThreshold)) {
+    if (!$LogConfiguration -or !$LogConfiguration.LogEventLogSource) {
         return
     } 
+
+    if ($LogConfiguration.LogEventLogThreshold -and !(Test-LogSeverity -MessageSeverity $Severity -ConfigSeverity $LogConfiguration.LogEventLogThreshold)) {
+        return
+    }
         
     if ($Severity -eq 3) {
         $entryType = [System.Diagnostics.EventLogEntryType]::Error
@@ -35,7 +39,7 @@ function Write-LogToEventLog() {
         $entryType = [System.Diagnostics.EventLogEntryType]::Information
     }
 
-    if ($LogConfiguration -and $LogConfiguration.LogEventLogSource -and ![System.Diagnostics.EventLog]::SourceExists($LogConfiguration.LogEventLogSource)) {
+    if (![System.Diagnostics.EventLog]::SourceExists($LogConfiguration.LogEventLogSource)) {
         [void](New-EventLog -LogName Application -Source $LogConfiguration.LogEventLogSource)
     }
 
