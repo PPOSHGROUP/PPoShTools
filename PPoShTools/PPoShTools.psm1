@@ -16,4 +16,4 @@ Set-StrictMode -Version Latest
 
 Export-ModuleMember -Function $Public.Basename
 
-Export-ModuleMember -Variable LogConfiguration, LogLevel
+Export-ModuleMember -Variable LogConfiguration

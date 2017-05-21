@@ -4,7 +4,7 @@ Function Write-Log {
         Writes a nicely formatted Message to stdout/file/event log.
 
     .DESCRIPTION
-        It uses optional $Script:LogConfiguration object which describes logging configuration (see LogConfiguration.ps1).
+        It uses optional $Global:LogConfiguration object which describes logging configuration (see LogConfiguration.ps1).
 
     .INPUTS
         A string message to log.
@@ -86,24 +86,32 @@ Function Write-Log {
 
     Begin { 
         if ($Error) {
-            $severity = [LogLevel]::Error;
+            $severity = 3;
             $severityChar = 'E'
         } 
         elseif ($warn) {
-            $severity = [LogLevel]::Warn;
+            $severity = 2;
             $severityChar = 'W'
         } 
         elseif ($_debug) {
-            $severity = [LogLevel]::Debug;
+            $severity = 0;
             $severityChar = 'D'
         } 
         else {
-            $severity = [LogLevel]::Info;
+            $severity = 1;
             $severityChar = 'I'
         }
 
-        if ($severity -lt $Script:LogConfiguration.LogLevel) {
-            return
+        if ($LogConfiguration) {
+            switch ($LogConfiguration.LogLevel.ToUpper()[0]) {
+                'E' { $configSeverity = 3 }
+                'W' { $configSeverity = 2 }
+                'D' { $configSeverity = 0 }
+                default { $configSeverity = 1 }
+            }
+            if ($severity -lt $configSeverity) {
+                return
+            }
         }
 
         $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
@@ -144,10 +152,10 @@ Function Write-Log {
             $exception = $_.Exception
             $msg = "Writing to log failed - script will terminate.`r`n"
             $currentUsername = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
-            if ($LogConfiguration.LogFile) {
-                $msg += "`r`nPlease ensure that current user ('{0}') has access to file '{1}' or change the path to log file in Global:`$LogConfiguration.LogFile." -f $currentUsername, $LogConfiguration.LogFile
+            if ($LogConfiguration -and $LogConfiguration.LogFile) {
+                $msg += "`r`nPlease ensure that current user ('{0}') has access to file '{1}' or change the path to log file in `$LogConfiguration.LogFile." -f $currentUsername, $LogConfiguration.LogFile
             }
-            if ($LogConfiguration.LogEventLogSource) {
+            if ($LogConfiguration -and $LogConfiguration.LogEventLogSource) {
                 $msg += "`r`nPlease ensure that current user ('{0}') is able to create Event Log sources or create the source manually." -f $currentUsername
             }
         
