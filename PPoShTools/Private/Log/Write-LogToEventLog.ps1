@@ -17,18 +17,18 @@ function Write-LogToEventLog() {
         [string[]] 
         $Message, 
         
-        [LogLevel] 
+        [int] 
         $Severity
     )
     
-    if (!$LogConfiguration.LogEventLogSource -or [int]$Severity -lt [int]$LogConfiguration.LogEventLogThreshold) {
+    if ($LogConfiguration -and !(Test-LogSeverity -MessageSeverity $Severity -ConfigSeverity $LogConfiguration.LogEventLogThreshold)) {
         return
-    }
+    } 
         
-    if ($Severity -eq [LogLevel]::ERROR) {
+    if ($Severity -eq 3) {
         $entryType = [System.Diagnostics.EventLogEntryType]::Error
     } 
-    elseif ($Severity -eq [LogLevel]::WARN) {
+    elseif ($Severity -eq 2) {
         $entryType = [System.Diagnostics.EventLogEntryType]::Warning
     } 
     else {

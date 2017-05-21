@@ -14,7 +14,7 @@ Function Write-Log {
         [I] 2017-05-19 11:14:28 [hostName/userName]: (scriptName/commandName/1) Generating file test.txt.
 
     .EXAMPLE
-        $Global.LogConfiguration.LogLevel = [LogLevel]::WARN
+        $Global.LogConfiguration.LogLevel = 'Warn'
         Write-Log -Info "Generating file test.txt."
         <nothing will be logged>
         Write-Log -Error "Failed to generate file test.txt."
@@ -102,17 +102,9 @@ Function Write-Log {
             $severityChar = 'I'
         }
 
-        if ($LogConfiguration) {
-            switch ($LogConfiguration.LogLevel.ToUpper()[0]) {
-                'E' { $configSeverity = 3 }
-                'W' { $configSeverity = 2 }
-                'D' { $configSeverity = 0 }
-                default { $configSeverity = 1 }
-            }
-            if ($severity -lt $configSeverity) {
-                return
-            }
-        }
+        if (!(Test-LogSeverity -MessageSeverity $severity)) {
+            return
+        } 
 
         $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
         $callerInfo = (Get-PSCallStack)[1]

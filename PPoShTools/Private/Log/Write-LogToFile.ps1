@@ -16,11 +16,11 @@ function Write-LogToFile() {
         [string[]] 
         $Message, 
         
-        [LogLevel] 
+        [int] 
         $Severity
     )
     
-    if (!$LogConfiguration.LogFile) {
+    if (!$LogConfiguration -or !$LogConfiguration.LogFile) {
         return
     }
     if (![System.IO.Path]::IsPathRooted($LogConfiguration.LogFile)) {

@@ -17,7 +17,7 @@ function Write-LogToStdOut() {
         [string[]] 
         $Message, 
         
-        [LogLevel] 
+        [int] 
         $Severity, 
         
         [switch] 
@@ -27,12 +27,12 @@ function Write-LogToStdOut() {
     Write-Host $Header -NoNewline -Fore "Gray"
 
     $color = switch ($Severity) {
-        ([LogLevel]::ERROR) { [ConsoleColor]::Red }
-        ([LogLevel]::WARN) { [ConsoleColor]::Yellow }
-        ([LogLevel]::INFO) { 
+        3 { [ConsoleColor]::Red }
+        2 { [ConsoleColor]::Yellow }
+        1 { 
             if ($Emphasize) { [ConsoleColor]::Cyan } else { [ConsoleColor]::White } 
         }
-        ([LogLevel]::DEBUG) { [ConsoleColor]::Gray }
+        0 { [ConsoleColor]::Gray }
         default { [ConsoleColor]::Red }
     }
 

@@ -16,7 +16,7 @@ function Write-LogToPSOutput() {
         [string[]] 
         $Message, 
         
-        [LogLevel] 
+        [int] 
         $Severity,
 
         [Parameter(Mandatory=$false)]
