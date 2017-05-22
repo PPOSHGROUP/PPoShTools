@@ -108,14 +108,22 @@ Function Write-Log {
 
         $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
         $callerInfo = (Get-PSCallStack)[1]
-        $callerCommandName = $callerInfo.InvocationInfo.MyCommand.Name
+        if ($callerInfo.InvocationInfo -and $callerInfo.InvocationInfo.MyCommand -and $callerInfo.InvocationInfo.MyCommand.Name) {
+            $callerCommandName = $callerInfo.InvocationInfo.MyCommand.Name
+        } else {
+            $callerCommandName = '';
+        }
         if ($callerInfo.ScriptName) {
             $callerScriptName = Split-Path -Leaf $callerInfo.ScriptName
         } 
         else {
             $callerScriptName = 'no script';
         }
-        $callerLineNumber = $callerInfo.ScriptLineNumber
+        if ($callerInfo.ScriptLineNumber) { 
+            $callerLineNumber = $callerInfo.ScriptLineNumber
+        } else {
+            $callerLineNumber = ''
+        }
         $callerInfoString = "$callerScriptName/$callerCommandName/$callerLineNumber"
         
         if ($NoHeader) {
