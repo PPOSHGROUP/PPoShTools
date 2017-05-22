@@ -110,7 +110,8 @@ Function Write-Log {
         $callerInfo = (Get-PSCallStack)[1]
         if ($callerInfo.InvocationInfo -and $callerInfo.InvocationInfo.MyCommand -and $callerInfo.InvocationInfo.MyCommand.Name) {
             $callerCommandName = $callerInfo.InvocationInfo.MyCommand.Name
-        } else {
+        } 
+        else {
             $callerCommandName = '';
         }
         if ($callerInfo.ScriptName) {
@@ -121,7 +122,8 @@ Function Write-Log {
         }
         if ($callerInfo.ScriptLineNumber) { 
             $callerLineNumber = $callerInfo.ScriptLineNumber
-        } else {
+        } 
+        else {
             $callerLineNumber = ''
         }
         $callerInfoString = "$callerScriptName/$callerCommandName/$callerLineNumber"
