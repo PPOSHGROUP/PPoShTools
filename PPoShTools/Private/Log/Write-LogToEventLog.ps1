@@ -10,22 +10,37 @@ function Write-LogToEventLog() {
 
     [CmdletBinding()]
     [OutputType([string])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '')]
     param(
+        [Parameter(Mandatory=$false)]
         [string] 
         $Header, 
         
+        [Parameter(Mandatory=$false)]
         [string[]] 
         $Message, 
         
+        [Parameter(Mandatory=$false)]
         [int] 
-        $Severity
+        $Severity,
+
+        [Parameter(Mandatory=$false)]
+        [switch] 
+        $PassThru
     )
+
+    if (!(Get-Variable -Scope Script -Name LogConfiguration -ErrorAction SilentlyContinue)) {
+        return
+    }
     
-    if (!$LogConfiguration -or !$LogConfiguration.LogEventLogSource) {
+    if (!$Script:LogConfiguration.LogEventLogSource) {
         return
     } 
 
-    if ($LogConfiguration.LogEventLogThreshold -and !(Test-LogSeverity -MessageSeverity $Severity -ConfigSeverity $LogConfiguration.LogEventLogThreshold)) {
+    $logEventLogSource = $Script:LogConfiguration.LogEventLogSource
+    $logEventLogThreshold = $Script:LogConfiguration.LogEventLogThreshold
+
+    if ($logEventLogSource -and !(Test-LogSeverity -MessageSeverity $Severity -ConfigSeverity $logEventLogThreshold)) {
         return
     }
         
@@ -39,14 +54,19 @@ function Write-LogToEventLog() {
         $entryType = [System.Diagnostics.EventLogEntryType]::Information
     }
 
-    if (![System.Diagnostics.EventLog]::SourceExists($LogConfiguration.LogEventLogSource)) {
-        [void](New-EventLog -LogName Application -Source $LogConfiguration.LogEventLogSource)
+    if (![System.Diagnostics.EventLog]::SourceExists($logEventLogSource)) {
+        Write-Host "Creating log event source '$logEventLogSource'."
+        [void](New-EventLog -LogName Application -Source $logEventLogSource)
     }
 
     $strBuilder = New-Object System.Text.StringBuilder
-    [void]($strBuilder.Append($Header))
-    foreach ($msg in $Message) {
-        [void]($strBuilder.Append($msg).Append("`r`n"))
+    if ($Header) {
+        [void]($strBuilder.Append($Header))
     }
-    Write-EventLog -LogName Application -Source $LogConfiguration.LogEventLogSource -EntryType $entryType -EventID 1 -Message ($strBuilder.ToString())
+    if ($Message) {
+        foreach ($msg in $Message) {
+            [void]($strBuilder.Append($msg).Append("`r`n"))
+        }
+    }
+    Write-EventLog -LogName Application -Source $logEventLogSource -EntryType $entryType -EventID 1 -Message ($strBuilder.ToString())
 }

@@ -4,7 +4,8 @@ Function Write-Log {
         Writes a nicely formatted Message to stdout/file/event log.
 
     .DESCRIPTION
-        It uses optional $Global:LogConfiguration object which describes logging configuration (see LogConfiguration.ps1).
+        It uses optional $LogConfiguration object which describes logging configuration (see LogConfiguration.ps1).
+        It can be set using Set-LogConfiguration function.
 
     .INPUTS
         A string message to log.
@@ -14,29 +15,25 @@ Function Write-Log {
         [I] 2017-05-19 11:14:28 [hostName/userName]: (scriptName/commandName/1) Generating file test.txt.
 
     .EXAMPLE
-        $Global.LogConfiguration.LogLevel = 'Warn'
+        Set-LogConfiguration -LogLevel Warn
         Write-Log -Info "Generating file test.txt."
         <nothing will be logged>
         Write-Log -Error "Failed to generate file test.txt."
         [E] 2017-05-19 11:14:28 [hostName/userName]: (scriptName/commandName/1) Failed to generate file test.txt.
 
     .EXAMPLE
-        $Global.LogConfiguration.LogFile = 'log.txt'
+        Set-LogConfiguration -LogFile 'log.txt'
         Write-Log -Info "Generating file test.txt."
-
         Logs message to stdout and log.txt file.
 
-
     .EXAMPLE
-        $Global.LogConfiguration.LogEventLogSource = 'log.txt'
-        $Global.LogConfiguration.LogEventLogThreshold = 'log.txt'
-        Write-Log -Info "Generating file test.txt."
+        Set-LogConfiguration -LogEventLogSource 'MyApplication' -LogEventLogThreshold Warn 
+        Write-Log -Warn "Failed to generate file test.txt."
     #>
     
     [CmdletBinding()]
-    [OutputType([void])]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", '')]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", '')]
+    [OutputType([string[]])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '')]
     param(       
         # If specified, an error will be logged.
         [Parameter(Mandatory=$false)]
@@ -145,10 +142,13 @@ Function Write-Log {
         $header = " " * $Indent + $outputHeader
     }
     Process { 
+        if (!(Test-LogSeverity -MessageSeverity $severity)) {
+            return
+        } 
         try { 
-            Write-LogToStdOut -Header $Header -Message $Message -Severity $Severity -Emphasize:$Emphasize
-            Write-LogToFile -Header $Header -Message $Message -Severity $Severity
-            Write-LogToEventLog -Header $Header -Message $Message -Severity $Severity
+            Write-LogToStdOut -Header $Header -Message $Message -Severity $Severity -Emphasize:$Emphasize -PassThru:$PassThru
+            Write-LogToFile -Header $Header -Message $Message -Severity $Severity -PassThru:$PassThru
+            Write-LogToEventLog -Header $Header -Message $Message -Severity $Severity -PassThru:$PassThru
             Write-LogToPSOutput -Header $Header -Message $Message -Severity $Severity -PassThru:$PassThru
         } catch {
             $exception = $_.Exception

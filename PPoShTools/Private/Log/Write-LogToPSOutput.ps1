@@ -24,7 +24,7 @@ function Write-LogToPSOutput() {
         $PassThru
     )
 
-    if ($PassThru) { 
+    if ($PassThru -and $Message) { 
         $msg = $Message -join "`r`n"
         Write-Output -InputObject "$Header$msg"
     }

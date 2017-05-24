@@ -10,29 +10,42 @@ function Write-LogToFile() {
     [CmdletBinding()]
     [OutputType([void])]
     param(
+        [Parameter(Mandatory=$false)]
         [string] 
         $Header, 
         
+        [Parameter(Mandatory=$false)]
         [string[]] 
         $Message, 
         
+        [Parameter(Mandatory=$false)]
         [int] 
-        $Severity
+        $Severity,
+
+        [Parameter(Mandatory=$false)]
+        [switch] 
+        $PassThru
     )
-    
-    if (!$LogConfiguration -or !$LogConfiguration.LogFile) {
+
+    if (!(Get-Variable -Scope Script -Name LogConfiguration -ErrorAction SilentlyContinue)) {
         return
     }
-    if (![System.IO.Path]::IsPathRooted($LogConfiguration.LogFile)) {
-        # we need to set absolute path to log file as .NET working directory would be c:\windows\system32
-        $LogConfiguration.LogFile = Join-Path -Path ((Get-Location).ProviderPath) -ChildPath $LogConfiguration.LogFile
+    
+    if (!$Script:LogConfiguration.LogFile) {
+        return
     }
 
+    $logFile = $Script:LogConfiguration.LogFile
+
     $strBuilder = New-Object System.Text.StringBuilder
-    [void]($strBuilder.Append($Header))
-    foreach ($msg in $Message) {
-        [void]($strBuilder.Append($msg).Append("`r`n"))
+    if ($Header) { 
+        [void]($strBuilder.Append($Header))
+    }
+    if ($Message) {
+        foreach ($msg in $Message) {
+            [void]($strBuilder.Append($msg).Append("`r`n"))
+        }
     }
         
-    [System.IO.File]::AppendAllText($LogConfiguration.LogFile, ($strBuilder.ToString()), [System.Text.Encoding]::Unicode)
+    [System.IO.File]::AppendAllText($logFile, ($strBuilder.ToString()), [System.Text.Encoding]::Unicode)
 }

@@ -18,7 +18,12 @@ function Write-ErrorRecord {
         # Error record to log. If null, $_ will be used.
         [Parameter(Mandatory=$false)]
         [System.Management.Automation.ErrorRecord]
-        $ErrorRecord
+        $ErrorRecord,
+
+        # If specified, exception will not be thrown at the end.
+        [Parameter(Mandatory=$false)]
+        [switch]
+        $NoThrow
     )
     
     if (!$ErrorRecord -and (Test-Path Variable:_)) {
@@ -66,5 +71,7 @@ function Write-ErrorRecord {
     }
    
     Write-Error -Message $messageToLog -ErrorAction Continue
-    throw
+    if (!$NoThrow) {
+        throw
+    }
 }
