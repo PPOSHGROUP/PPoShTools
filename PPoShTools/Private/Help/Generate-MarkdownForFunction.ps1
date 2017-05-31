@@ -66,8 +66,9 @@ function Generate-MarkdownForFunction {
 
     Write-Log -Info "Generating markdown for $funcName"
 
-    $funcRelativeLocation = (Split-Path -Path $FunctionInfo.Path -Parent).Replace("$modulePublicPath\", '')
-    if ($funcRelativeLocation -ne $Script:currentRelativeLocation) {
+    $funcLocation = Split-Path -Path $FunctionInfo.Path -Parent
+    $funcRelativeLocation = $funcLocation.Replace("$modulePublicPath\", '')
+    if ($funcRelativeLocation -ne $Script:currentRelativeLocation -and $funcLocation -ne $funcRelativeLocation) {
         [void]($OutputIndexString.Append("`r`n### $funcRelativeLocation`r`n"))    
         $Script:currentRelativeLocation = $funcRelativeLocation
     }
