@@ -3,7 +3,7 @@ function New-MarkdownDoc {
     .SYNOPSIS
     Generates markdown documentation for each public function from given module.
 
-    .PARAMETER ModuleName
+    .PARAMETER ModulePath
     Module to scan.
 
     .PARAMETER OutputPath
@@ -21,11 +21,11 @@ function New-MarkdownDoc {
     param(
         [Parameter(Mandatory=$true, ParameterSetName = 'Module')]
         [string]
-        $ModuleName,
+        $ModulePath,
 
         [Parameter(Mandatory=$true, ParameterSetName = 'Directory')]
         [string]
-        $Path,
+        $DirectoryPath,
 
         [Parameter(Mandatory=$true)]
         [string]
@@ -36,12 +36,12 @@ function New-MarkdownDoc {
         $GitBaseUrl
     )
 
-    if ($Path) {
-        $Path = (Resolve-Path -LiteralPath $Path).ProviderPath
+    if ($DirectoryPath) {
+        $DirectoryPath = (Resolve-Path -LiteralPath $DirectoryPath).ProviderPath
+        $ModulePath = $DirectoryPath
     }
-    if (!$ModuleName) {
-        $ModuleName = Split-Path -Path $Path -Leaf
-    }
+    
+    $ModuleName = Split-Path -Path $ModulePath -Leaf
     if ((Test-Path -Path $OutputPath)) { 
         Write-Log -Info "Deleting directory '$OutputPath'"
         Remove-Item -Path $OutputPath -Recurse -Force
@@ -52,13 +52,13 @@ function New-MarkdownDoc {
     [void]($OutputIndexString.Append("## Module $ModuleName`r`n"))
 
     if ($PSCmdlet.ParameterSetName -eq 'Directory') {
-        $functionsToDocument = Get-AllFunctionsFromDirectory -Path $Path
+        $functionsToDocument = Get-AllFunctionsFromDirectory -Path $DirectoryPath
     } 
     else { 
-        $functionsToDocument = Get-HelpAllFunctionsFromModule -ModuleName $ModuleName
+        $functionsToDocument = Get-HelpAllFunctionsFromModule -ModulePath $ModulePath -ModuleName $ModuleName
     }
     foreach ($funcInfo in $functionsToDocument) {
-        $outputString = Generate-MarkdownForFunction -FunctionInfo $funcInfo -OutputIndexString $outputIndexString -ModuleName $moduleName -ModulePath $Path -GitBaseUrl $GitBaseUrl
+        $outputString = Generate-MarkdownForFunction -FunctionInfo $funcInfo -OutputIndexString $outputIndexString -ModulePath $ModulePath -ModuleName $moduleName -GitBaseUrl $GitBaseUrl
         
         $outputFilePath = Join-Path -Path $OutputPath -ChildPath "$($funcInfo.FunctionName).md"
         $outputString.ToString() | Out-File -FilePath $outputFilePath  

@@ -36,7 +36,7 @@ function Generate-MarkdownForFunction {
         [string]
         $ModuleName,
 
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$true)]
         [string]
         $ModulePath,
 
@@ -49,9 +49,6 @@ function Generate-MarkdownForFunction {
     $help = $FunctionInfo.Help
 
     
-    if (!$ModulePath) {
-        $ModulePath = Split-Path -Parent (Get-Module -Name $ModuleName -ListAvailable).Path
-    }
     if ((Split-Path -Path $ModulePath -Leaf) -ine 'public') {
         $public = Get-ChildItem -Path $ModulePath -Filter 'public' -Directory | Select-Object -ExpandProperty Name
         $modulePublicPath = Join-Path -Path $ModulePath -ChildPath $public

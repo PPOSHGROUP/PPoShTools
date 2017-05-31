@@ -3,22 +3,29 @@ function Get-HelpAllFunctionsFromModule {
     .SYNOPSIS
     Gets all public functions from given module.
 
+    .PARAMETER ModulePath
+    Module path.
+
     .PARAMETER ModuleName
     Module name.
 
     .EXAMPLE
-    $functionsToDocument = Get-HelpAllFunctionsFromModule -ModuleName $ModuleName
+    $functionsToDocument = Get-HelpAllFunctionsFromModule -ModulePath $ModulePath -ModuleName $ModuleName
     #>
     [CmdletBinding()]
     [OutputType([object[]])]
     param(
         [Parameter(Mandatory=$true)]
         [string]
+        $ModulePath,
+
+        [Parameter(Mandatory=$true)]
+        [string]
         $ModuleName
     )
 
-    Write-Log -Info "Getting functions from $ModuleName"
-    $modulePath = Split-Path -Parent (Get-Module -Name $ModuleName -ListAvailable).Path
+    Write-Log -Info "Getting functions from $ModulePath"
+    #Import-Module -Name $ModulePath -Force
     $allPs1Files = Get-ChildItem -Path "$modulePath\Public" -Include "*.ps1" -Recurse | Select-Object -ExpandProperty FullName
 
     $result = New-Object -TypeName System.Collections.ArrayList
