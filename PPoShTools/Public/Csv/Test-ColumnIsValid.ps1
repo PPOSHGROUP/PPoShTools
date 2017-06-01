@@ -83,7 +83,7 @@ function Test-ColumnIsValid {
     }
     if ($DateFormat) {
         [datetime]$date = New-Object -TypeName DateTime
-        $success = [DateTime]::TryParseExact($String, $DateFormat, [System.Globalization.CultureInfo]::InvariantCulture, [System.Globalization.DateTimeStyles]::None, [ref]$date)
+        $success = [DateTime]::TryParseExact($value, $DateFormat, [System.Globalization.CultureInfo]::InvariantCulture, [System.Globalization.DateTimeStyles]::None, [ref]$date)
 
         if (!$success) {
             $errors += "$ColumnName has invalid value ('$value') - should be a date in format '$DateFormat'"
