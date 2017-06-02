@@ -1,18 +1,18 @@
 function Test-ColumnIsValid {
 
     <#
-    .SYNOPSIS
-    Validates a column value in a single CSV row.
+      .SYNOPSIS
+      Validates a column value in a single CSV row.
 
-    .DESCRIPTION
-    It is useful in Get-CsvData / Get-ValidationRules to validate columns read from CSV row.
-    It returns empty array if the value is valid, or array of error messages if it's invalid.
+      .DESCRIPTION
+      It is useful in Get-CsvData / Get-ValidationRules to validate columns read from CSV row.
+      It returns empty array if the value is valid, or array of error messages if it's invalid.
     
-    .EXAMPLE
-    $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'Login' -NonEmpty -NotContains '?', ' '
-    $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'Name' -NonEmpty -NotContains '?'
-    $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'StartDate' -DateFormat 'yyyy-MM-dd'
-    $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'Gender' -ValidSet '', 'F', 'M'
+      .EXAMPLE
+      $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'Login' -NonEmpty -NotContains '?', ' '
+      $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'Name' -NonEmpty -NotContains '?'
+      $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'StartDate' -DateFormat 'yyyy-MM-dd'
+      $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'Gender' -ValidSet '', 'F', 'M'
     #>
     [CmdletBinding()]
     [OutputType([string[]])]
@@ -45,7 +45,12 @@ function Test-ColumnIsValid {
         # If specified, it will be asserted the column value can be converted to a date using specified format.
         [Parameter(Mandatory = $false)]
         [string]
-        $DateFormat
+        $DateFormat,
+        
+        # If specified, it will be asserted the column value is specified lenght.
+        [Parameter(Mandatory = $false)]
+        [int]
+        $LengthMax
     )
 
     $errors = @()
@@ -89,5 +94,11 @@ function Test-ColumnIsValid {
             $errors += "$ColumnName has invalid value ('$value') - should be a date in format '$DateFormat'"
         }
     }
+    if ($LengthMax) {
+        if ($value.Length -gt $LengthMax) {
+          $errors += "$ColumnName has invalid value ('$value') - string length is greater then: '$LengthMax'"
+        }
+    }
+    
     return $errors
 }
