@@ -23,7 +23,12 @@ function Write-ErrorRecord {
         # If specified, exception will not be thrown at the end.
         [Parameter(Mandatory=$false)]
         [switch]
-        $NoThrow
+        $NoThrow,
+		
+		# If specified, all log output will be available as return value.
+		[Parameter(Mandatory=$false)]
+        [switch] 
+        $PassThru
     )
     
     if (!$ErrorRecord -and (Test-Path Variable:_)) {
@@ -70,7 +75,13 @@ function Write-ErrorRecord {
         }
     }
    
-    Write-Error -Message $messageToLog -ErrorAction Continue
+	if ($PassThru) {
+		$msg = $messageToLog -join "`r`n"
+		Write-Output -InputObject $msg
+	} 
+	else {
+		Write-Error -Message $messageToLog -ErrorAction Continue
+	}
     if (!$NoThrow) {
         throw
     }
