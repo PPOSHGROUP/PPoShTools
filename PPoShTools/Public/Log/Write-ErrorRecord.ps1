@@ -78,7 +78,8 @@ function Write-ErrorRecord {
 	if ($PassThru) {
 		$msg = $messageToLog -join "`r`n"
 		Write-Output -InputObject $msg
-	} else {
+	} 
+	else {
 		Write-Error -Message $messageToLog -ErrorAction Continue
 	}
     if (!$NoThrow) {
