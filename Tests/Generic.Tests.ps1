@@ -40,4 +40,3 @@ Describe 'Module Information' -Tags 'Command'{
         }
     }
 }
-Remove-Module $ModuleName
