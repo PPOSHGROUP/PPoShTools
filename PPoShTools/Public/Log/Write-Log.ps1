@@ -131,7 +131,7 @@ Function Write-Log {
         else {
             $currentHostname = [system.environment]::MachineName
             $currentUsername = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
-            if (Test-Path variable:PSSenderInfo) {
+            if (Test-Path -Path Variable:PSSenderInfo) {
                 $remotingFlag = '[R] '
             } 
             else {
