@@ -66,27 +66,26 @@
     }
     if ($fontFiles) {
       foreach ($item in $fontFiles) {
+        Write-Log -Info -Message "Processing font file {$item}"
+        if(Test-Path (Join-Path -Path $objfontFolder -ChildPath $item.Name)) {
+          Write-Log -Info -Message "Font {$($item.Name)} already exists in {$objfontFolder}"
+        }
+        else {
+          Write-Log -Info -Message "Font {$($item.Name)} does not exists in {$objfontFolder}"
+          Write-Log -Info -Message "Reading font Full Name  {$($item.Name)}"
 
-          Write-Log -Info -Message "Processing font file {$item}"
-          if(Test-Path (Join-Path -Path $objfontFolder -ChildPath $item.Name)) {
-            Write-Log -Info -Message "Font {$($item.Name)} already exists in {$objfontFolder}"
+          $objFontCollection =  new-object System.Drawing.Text.PrivateFontCollection
+          $objFontCollection.AddFontFile($item.FullName)
+          $FontName = $objFontCollection.Families.Name
+
+          Write-Log -Info -Message "Font Full Name is {$FontName}"
+          Write-Log -Info -Message "Copying Font {$($item.Name)} to system Folder {$objfontFolder}"
+          $folder.CopyHere($item.FullName, $copyFlag)
+
+          if (-not ( Get-ItemProperty -Path $fontRegistryPath -name *$FontName*)) {
+            New-ItemProperty -Name $FontName -Path $fontRegistryPath -PropertyType string -Value $item.Name
+            Write-Log -Info -Message "Registering Font {$item} in Registry"
           }
-          else {
-            Write-Log -Info -Message "Font {$($item.Name)} does not exists in {$objfontFolder}"
-            Write-Log -Info -Message "Reading font Full Name  {$($item.Name)}"
-
-            $objFontCollection =  new-object System.Drawing.Text.PrivateFontCollection
-            $objFontCollection.AddFontFile($item.FullName)
-            $FontName = $objFontCollection.Families.Name
-
-            Write-Log -Info -Message "Font Full Name is {$FontName}"
-            Write-Log -Info -Message "Copying Font {$($item.Name)} to system Folder {$objfontFolder}"
-            $folder.CopyHere($item.FullName, $copyFlag)
-
-            if (-not ( Get-ItemProperty -Path $fontRegistryPath -name *$FontName*)) {
-              New-ItemProperty -Name $FontName -Path $fontRegistryPath -PropertyType string -Value $item.Name
-              Write-Log -Info -Message "Registering Font {$item} in Registry"
-            }
         }
       }
     }
