@@ -56,9 +56,9 @@
     switch ($PsCmdlet.ParameterSetName) {
       "Directory" {
         ForEach ($fontsFolder in $Path){
-        Write-Log -Info -Message "Processing folder {$fontsFolder}"
-        $fontFiles = Get-ChildItem -Path $fontsFolder -File -Recurse -Include @("*.fon", "*.fnt", "*.ttf","*.ttc", "*.otf", "*.mmm", "*.pbf", "*.pfm")
-       }
+          Write-Log -Info -Message "Processing folder {$fontsFolder}"
+          $fontFiles = Get-ChildItem -Path $fontsFolder -File -Recurse -Include @("*.fon", "*.fnt", "*.ttf","*.ttc", "*.otf", "*.mmm", "*.pbf", "*.pfm")
+        }
       }
       "File" {
         $fontFiles = Get-ChildItem -Path $FontFile -Include @("*.fon", "*.fnt", "*.ttf","*.ttc", "*.otf", "*.mmm", "*.pbf", "*.pfm")
@@ -89,6 +89,7 @@
         }
       }
     }
+  }
   end {
   }
 }
