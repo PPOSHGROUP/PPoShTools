@@ -1,5 +1,5 @@
 ﻿function ConvertTo-HashtableFromJSON {
-  #requires -Version 3.0 
+  #requires -Version 3.0
   <#
       .SYNOPSIS
       Retrievies json file from disk and converts to hashtable.
@@ -25,22 +25,24 @@
 
     [CmdletBinding()]
     [OutputType([Hashtable])]
-    param ( 
-         [Parameter(  
-             Position = 0,HelpMessage='Path to json file', 
-             Mandatory = $true,   
-             ValueFromPipeline = $true,  
+    param (
+         [Parameter(
+             Position = 0,HelpMessage='Path to json file',
+             Mandatory = $true,
+             ValueFromPipeline = $true,
              ValueFromPipelineByPropertyName = $true)]
-         [ValidateScript({Test-Path -Path $_ -PathType 'Leaf' })]
-         
+         [ValidateScript({Test-Path -Path $_ -PathType 'Leaf' -Include '*.json' })]
+
          [string]
-         $Path 
-     ) 
+         $Path
+     )
 
   Process{
+    Write-Log -Info -Message "Reading configuration file from {$Path}"
     $content = Get-Content -LiteralPath $path -ReadCount 0 -Raw | Out-String
     $pscustomObject = ConvertFrom-Json -InputObject $content
     $hashtable = ConvertTo-HashtableFromPsCustomObject -psCustomObject $pscustomObject
+    Write-Log -Info -Message "Returning parsed configuration hashtable"
     $hashtable
   }
 }
