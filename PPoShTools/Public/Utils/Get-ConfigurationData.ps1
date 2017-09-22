@@ -39,7 +39,7 @@ function Get-ConfigurationData {
         Position = 0, HelpMessage = 'Select output type')]
         [ValidateSet('PSObject','HashTable')]
     [string]
-    $OutputType='PSObject'
+    $OutputType='HashTable'
 
 
   )
