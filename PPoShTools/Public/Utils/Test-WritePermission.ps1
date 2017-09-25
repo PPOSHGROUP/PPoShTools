@@ -30,8 +30,7 @@ function Test-WritePermission {
   $Path
   )
 
-  foreach ($testPath in $Path)
-  {
+  foreach ($testPath in $Path) {
     $testFileName = "TestFile_{0}" -f (Get-Date -Format 'yyyyMMddHHss')
     $testfile = New-Item -Path $testPath -Name $testFileName -ItemType File -ErrorAction SilentlyContinue
     if (-not $testfile) {

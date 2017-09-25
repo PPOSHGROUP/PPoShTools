@@ -53,11 +53,10 @@
     if ($Type -eq 'Group') {
         $addgroup = [ADSI]"WinNT://$DomainName/$Identity,group"
         $LocalGroup.Add($addgroup.Path)
-    } elseif ($Type -eq 'User') {
+    }
+    elseif ($Type -eq 'User') {
         $addUser = [ADSI]"WinNT://$DomainName/$Identity,user"
         $LocalGroup.Add($addUser.Path)
     }
-
     Write-Log -Info "Added {$Identity} Type {$Type} to local group {$Group} on {$Computername}"
-
 }
