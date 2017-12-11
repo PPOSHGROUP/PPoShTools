@@ -95,7 +95,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        # Tags = @()
+        Tags = @('PPoSh')
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/PPOSHGROUP/PPoShTools/blob/master/LICENSE'
