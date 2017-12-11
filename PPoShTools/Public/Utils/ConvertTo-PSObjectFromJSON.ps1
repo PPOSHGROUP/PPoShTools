@@ -1,4 +1,4 @@
-﻿function ConvertTo-HashtableFromJSON {
+function ConvertTo-PSObjectFromJSON {
   #requires -Version 3.0
   <#
       .SYNOPSIS
@@ -11,28 +11,25 @@
       Path to a json file.
 
       .EXAMPLE
-      ConvertTo-HashtableFromJSON -Path c:\somefile.json
-      Will read somefile.json and convert it to custom hashtable.
+      ConvertTo-PSObjectFromJSON -Path c:\somefile.json
+      Will read somefile.json and convert it to custom psobject.
 
       .INPUTS
       Path to a json file (string).
 
       .OUTPUTS
-      Custom Hashtable.
+      Custom PS Object.
   #>
 
 
 
     [CmdletBinding()]
-    [OutputType([Hashtable])]
+    [OutputType([PSObject])]
     param (
-         [Parameter(
+         [Parameter(Mandatory = $true,
              Position = 0,HelpMessage='Path to json file',
-             Mandatory = $true,
-             ValueFromPipeline = $true,
-             ValueFromPipelineByPropertyName = $true)]
+             ValueFromPipeline = $true,ValueFromPipelineByPropertyName = $true)]
          [ValidateScript({Test-Path -Path $_ -PathType 'Leaf' -Include '*.json' })]
-
          [string]
          $Path
      )
@@ -41,9 +38,8 @@
     Write-Log -Info -Message "Reading configuration file from {$Path}"
     $content = Get-Content -LiteralPath $path -ReadCount 0 -Raw | Out-String
     $pscustomObject = ConvertFrom-Json -InputObject $content
-    $hashtable = ConvertTo-HashtableFromPsCustomObject -psCustomObject $pscustomObject
-    Write-Log -Info -Message "Returning parsed configuration hashtable"
-    $hashtable
+    Write-Log -Info -Message "Returning parsed configuration object"
+    $pscustomObject
   }
 }
 
