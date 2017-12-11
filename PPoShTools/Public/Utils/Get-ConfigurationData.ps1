@@ -4,13 +4,11 @@ function Get-ConfigurationData {
       Get-ConfigurationData will retrieve configuratin depending on the input
 
       .DESCRIPTION
-      Currently JSON (.json) and PowerShell Data (.psd1) are supported.
-      For JSON files possible output is hashtable (default) and PSObject.
-      For PSD1 files only PSObject is currently supported.
-      Using helpers function will return an object data from given configuration file
+      Currently JSON files are integrated.
+      Using ConvertTo-HashtableFromJSON will return configuration data from json file
 
       .PARAMETER ConfigurationPath
-      Path to JSON or psd1 file
+      Path to JSON file
 
       .EXAMPLE
       Get-ConfigurationData -ConfigurationPath C:\SomePath\Config.json -OutputType HashTable
@@ -20,30 +18,29 @@ function Get-ConfigurationData {
       Get-ConfigurationData -ConfigurationPath C:\SomePath\Config.json -OutputType PSObject
       Will read content of Config.json file and convert it to a PS Object.
 
-      .EXAMPLE
-      Get-ConfigurationData -ConfigurationPath C:\SomePath\Config.psd1
-      Will read content of Config.psd1 file and return it as a HashTable.
-
       .INPUTS
-      Accepts string as paths to JSON or PSD1 files
+      Accepts string as paths to JSON files
 
       .OUTPUTS
-      Outputs a hashtable of key/value pair or PSObject.
+      Outputs a hashtable of key/value pair or PSObject based on JSON file
   #>
 
   [CmdletBinding()]
   [OutputType([Hashtable])]
   param (
-    [Parameter(Mandatory = $true, HelpMessage = 'Provide path for configuration file to read', Position = 0 )]
+    [Parameter(Mandatory = $true,
+        Position = 0, HelpMessage = 'Provide path for configuration file to read')]
     [ValidateScript({Test-Path -Path $_ -PathType Leaf })]
 
     [string[]]
     $ConfigurationPath,
 
-    [Parameter(Mandatory = $false, HelpMessage = 'Select output type',Position = 0)]
-    [ValidateSet('PSObject','HashTable')]
+    [Parameter(Mandatory = $false,
+        Position = 0, HelpMessage = 'Select output type')]
+        [ValidateSet('PSObject','HashTable')]
     [string]
     $OutputType='HashTable'
+
 
   )
   process {
@@ -55,9 +52,6 @@ function Get-ConfigurationData {
             elseif($PSBoundParameters.ContainsValue('PSObject')){
               (ConvertTo-PSObjectFromJSON -Path $configPath)
             }
-        }
-        if($configPath -match '.psd1') {
-          Import-LocalizedData -BaseDirectory (Split-Path $ConfigurationPath -Parent) -FileName (Split-Path $ConfigurationPath -Leaf)
         }
     }
   }
