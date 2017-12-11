@@ -22,7 +22,7 @@ function Get-ConfigurationData {
 
       .EXAMPLE
       Get-ConfigurationData -ConfigurationPath C:\SomePath\Config.psd1
-      Will read content of Config.psd1 file and return it as a PS Object.
+      Will read content of Config.psd1 file and return it as a HashTable.
 
       .INPUTS
       Accepts string as paths to JSON or PSD1 files
