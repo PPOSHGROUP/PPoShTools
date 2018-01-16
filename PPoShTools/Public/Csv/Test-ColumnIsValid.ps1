@@ -77,7 +77,7 @@ function Test-ColumnIsValid {
 	if ($Contains) {
 		$ok = $false
 		foreach ($legalChar in $Contains) {
-			if ($value -icontains $legalChar) {
+			if ($value -imatch $legalChar) {
 				$ok = $true
 				break
 			}
