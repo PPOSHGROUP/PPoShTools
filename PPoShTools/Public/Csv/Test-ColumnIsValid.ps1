@@ -73,8 +73,20 @@ function Test-ColumnIsValid {
                 $errors += "$ColumnName has invalid value ('$value') - contains illegal character: '$illegalChar'"
             }
         }
-    }
-    if ($ValidSet) {
+	}
+	if ($Contains) {
+		$ok = $false
+		foreach ($legalChar in $Contains) {
+			if ($value -icontains $legalChar) {
+				$ok = $true
+				break
+			}
+		}
+		if (!$ok) {
+			$errors += "$ColumnName has invalid value ('$value') - should be one of '{0}'." -f ($Contains -join "', ")
+		}
+	}
+	if ($ValidSet) {
         $ok = $false
         foreach ($validValue in $ValidSet) {
             if ($value -ieq $validValue) {
