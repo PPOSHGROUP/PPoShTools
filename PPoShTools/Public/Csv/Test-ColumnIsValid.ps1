@@ -1,5 +1,5 @@
 function Test-ColumnIsValid {
-
+	
     <#
       .SYNOPSIS
       Validates a column value in a single CSV row.
@@ -14,43 +14,40 @@ function Test-ColumnIsValid {
       $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'StartDate' -DateFormat 'yyyy-MM-dd'
       $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'Gender' -ValidSet '', 'F', 'M'
     #>
-    [CmdletBinding()]
-    [OutputType([string[]])]
-    param(
-        # CSV row (or any other PSCustomObject).
-        [Parameter(Mandatory = $true)]
-        [PSCustomObject]
-        $Row,
-
-        # Name of the column which will be validated.
-        [Parameter(Mandatory = $true)]
-        [string]
-        $ColumnName,
-
-        # If $true, it will be asserted the column value is not empty.
-        [Parameter(Mandatory = $false)]
-        [switch]
-        $NonEmpty,
+	[CmdletBinding()]
+	[OutputType([string[]])]
+	param (
+		# CSV row (or any other PSCustomObject).
+		[Parameter(Mandatory = $true)]
+		[PSCustomObject]$Row,
+		
+		# Name of the column which will be validated.
+		[Parameter(Mandatory = $true)]
+		[string]$ColumnName,
+		
+		# If $true, it will be asserted the column value is not empty.
+		[Parameter(Mandatory = $false)]
+		[switch]$NonEmpty,
 
         # If specified, it will be asserted the column value does not contain any of the specified string.
         [Parameter(Mandatory = $false)]
-        [string[]]
-        $NotContains,
+        [string[]]$NotContains,
+		
+		# If specified, it will be asserted the column value contain any of the specified string.
+		[Parameter(Mandatory = $false)]
+		[string[]]$Match,
 
         # If specified, it will be asserted the column value is one of the specified string.
         [Parameter(Mandatory = $false)]
-        [string[]]
-        $ValidSet,
+        [string[]]$ValidSet,
 
         # If specified, it will be asserted the column value can be converted to a date using specified format.
         [Parameter(Mandatory = $false)]
-        [string]
-        $DateFormat,
+        [string]$DateFormat,
         
         # If specified, it will be asserted the column value is specified lenght.
         [Parameter(Mandatory = $false)]
-        [int]
-        $LengthMax
+        [int]$LengthMax
     )
 
     $errors = @()
@@ -73,8 +70,20 @@ function Test-ColumnIsValid {
                 $errors += "$ColumnName has invalid value ('$value') - contains illegal character: '$illegalChar'"
             }
         }
-    }
-    if ($ValidSet) {
+	}
+	if ($Match) {
+		$ok = $false
+		foreach ($legalString in $Match) {
+			if ($value -imatch $legalString) {
+				$ok = $true
+				break
+			}
+		}
+		if (!$ok) {
+			$errors += "$ColumnName has invalid value ('$value') - should be one of '{0}'." -f ($Match -join "', ")
+		}
+	}
+	if ($ValidSet) {
         $ok = $false
         foreach ($validValue in $ValidSet) {
             if ($value -ieq $validValue) {
