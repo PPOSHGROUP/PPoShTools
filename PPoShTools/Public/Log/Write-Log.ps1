@@ -27,42 +27,42 @@ Function Write-Log {
         Logs message to stdout and log.txt file.
 
     .EXAMPLE
-        Set-LogConfiguration -LogEventLogSource 'MyApplication' -LogEventLogThreshold Warn 
+        Set-LogConfiguration -LogEventLogSource 'MyApplication' -LogEventLogThreshold Warn
         Write-Log -Warn "Failed to generate file test.txt."
     #>
-    
+
     [CmdletBinding()]
     [OutputType([string[]])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '')]
-    param(       
+    param(
         # If specified, an error will be logged.
         [Parameter(Mandatory=$false)]
-        [switch] 
+        [switch]
         $Error = $false,
-        
+
         # If specified, a warning will be logged.
         [Parameter(Mandatory=$false)]
-        [switch] 
+        [switch]
         $Warn = $false,
-        
+
         # If specified, an info message will be logged (default).
         [Parameter(Mandatory=$false)]
-        [switch] 
+        [switch]
         $Info = $false,
-        
+
         # If specified, a debug message will be logged.
         [Parameter(Mandatory=$false)]
-        [switch] 
+        [switch]
         $_debug = $false,
-        
+
         # If set, the message at console will be emphasized using colors.
         [Parameter(Mandatory=$false)]
-        [switch] 
+        [switch]
         $Emphasize = $false,
-        
+
         # If specified, header information will not be logged (e.g. '[ERROR]: (function_name)').
         [Parameter(Mandatory=$false)]
-        [switch] 
+        [switch]
         $NoHeader = $false,
 
         # Message to output.
@@ -77,23 +77,23 @@ Function Write-Log {
 
         # If enabled, all log output will be available as return value (will use Write-Output instead of Write-Host).
         [Parameter(Mandatory=$false)]
-        [switch] 
+        [switch]
         $PassThru = $false
     )
 
-    Begin { 
+    Begin {
         if ($Error) {
             $severity = 3;
             $severityChar = 'E'
-        } 
+        }
         elseif ($warn) {
             $severity = 2;
             $severityChar = 'W'
-        } 
+        }
         elseif ($_debug) {
             $severity = 0;
             $severityChar = 'D'
-        } 
+        }
         else {
             $severity = 1;
             $severityChar = 'I'
@@ -101,39 +101,39 @@ Function Write-Log {
 
         if (!(Test-LogSeverity -MessageSeverity $severity)) {
             return
-        } 
+        }
 
         $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
         $callerInfo = (Get-PSCallStack)[1]
         if ($callerInfo.InvocationInfo -and $callerInfo.InvocationInfo.MyCommand -and $callerInfo.InvocationInfo.MyCommand.Name) {
             $callerCommandName = $callerInfo.InvocationInfo.MyCommand.Name
-        } 
+        }
         else {
             $callerCommandName = '';
         }
         if ($callerInfo.ScriptName) {
             $callerScriptName = Split-Path -Leaf $callerInfo.ScriptName
-        } 
+        }
         else {
             $callerScriptName = 'no script';
         }
-        if ($callerInfo.ScriptLineNumber) { 
+        if ($callerInfo.ScriptLineNumber) {
             $callerLineNumber = $callerInfo.ScriptLineNumber
-        } 
+        }
         else {
             $callerLineNumber = ''
         }
         $callerInfoString = "$callerScriptName/$callerCommandName/$callerLineNumber"
-        
+
         if ($NoHeader) {
             $outputHeader = ""
-        } 
+        }
         else {
             $currentHostname = [system.environment]::MachineName
             $currentUsername = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
             if (Test-Path -Path Variable:PSSenderInfo) {
                 $remotingFlag = '[R] '
-            } 
+            }
             else {
                 $remotingFlag = ''
             }
@@ -141,16 +141,17 @@ Function Write-Log {
         }
         $header = " " * $Indent + $outputHeader
     }
-    Process { 
+    Process {
         if (!(Test-LogSeverity -MessageSeverity $severity)) {
             return
-        } 
-        try { 
+        }
+        try {
             Write-LogToStdOut -Header $Header -Message $Message -Severity $Severity -Emphasize:$Emphasize -PassThru:$PassThru
             Write-LogToFile -Header $Header -Message $Message -Severity $Severity -PassThru:$PassThru
             Write-LogToEventLog -Header $Header -Message $Message -Severity $Severity -PassThru:$PassThru
             Write-LogToPSOutput -Header $Header -Message $Message -Severity $Severity -PassThru:$PassThru
-        } catch {
+        }
+        catch {
             $exception = $_.Exception
             $msg = "Writing to log failed - script will terminate.`r`n"
             $currentUsername = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
@@ -160,7 +161,7 @@ Function Write-Log {
             if ($LogConfiguration -and $LogConfiguration.LogEventLogSource) {
                 $msg += "`r`nPlease ensure that current user ('{0}') is able to create Event Log sources or create the source manually." -f $currentUsername
             }
-        
+
             $msg += "`n" + ($_ | Format-List -Force | Out-String) + ($exception | Format-List -Force | Out-String)
             Write-Host $msg
             [void](New-Item -Path "error.txt" -ItemType file -Value $msg -Force)

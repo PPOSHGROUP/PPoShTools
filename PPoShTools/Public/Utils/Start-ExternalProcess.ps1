@@ -7,7 +7,7 @@ function Start-ExternalProcess {
         .DESCRIPTION
             Runs an external process with proper logging and error handling.
             It fails if anything is present in stderr stream or if exitcode is non-zero.
-    
+
         .EXAMPLE
             Start-ExternalProcess -Command "git" -ArgumentList "--version"
     #>
@@ -16,75 +16,75 @@ function Start-ExternalProcess {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidDefaultValueSwitchParameter', '')]
     param(
         # Command to run.
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]
         $Command,
 
         # ArgumentList for Command.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [string]
         $ArgumentList,
 
         # Working directory. Leave empty for default.
-        [Parameter(Mandatory=$false)]
-        [string] 
-        $WorkingDirectory, 
-        
+        [Parameter(Mandatory = $false)]
+        [string]
+        $WorkingDirectory,
+
         # If true, exit code will be validated (if zero, an error will be thrown).
         # If false, it will not be validated but returned as a result of the function.
-        [Parameter(Mandatory=$false)]
-        [switch] 
+        [Parameter(Mandatory = $false)]
+        [switch]
         $CheckLastExitCode = $true,
 
         # If true, the cmdlet will return exit code of the invoked command.
         # If false, the cmdlet will return nothing.
-        [Parameter(Mandatory=$false)]
-        [switch] 
+        [Parameter(Mandatory = $false)]
+        [switch]
         $ReturnLastExitCode = $true,
 
         # If true and any output is present in stderr, an error will be thrown.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [switch]
         $CheckStdErr = $true,
-        
+
         # If not null and given string will be present in stdout, an error will be thrown.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [string]
-        $FailOnStringPresence, 
-        
+        $FailOnStringPresence,
+
         # If set, then $Command will be executed under $Credential account.
-        [Parameter(Mandatory=$false)]
-        [System.Management.Automation.PSCredential] 
+        [Parameter(Mandatory = $false)]
+        [System.Management.Automation.PSCredential]
         $Credential,
-        
+
         # Reference parameter that will get STDOUT text.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [ref]
         $Output,
 
         # Reference parameter that will get STDERR text.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [ref]
         $OutputStdErr,
-        
+
         # Timeout to wait for external process to be finished.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [int]
         $TimeoutInSeconds,
 
         # If true, no output from the command will be passed to the console.
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [switch]
         $Quiet = $false,
 
         # If true, STDOUT/STDERR will be displayed if error occurs (even if -Quiet is specified).
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [switch]
         $ReportOutputOnError = $true,
 
         # Each stdout/stderr line that match this regex will be ignored (not written to console/$output).
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [string]
         $IgnoreOutputRegex
     )
@@ -102,12 +102,12 @@ function Start-ExternalProcess {
                 $exists = Test-Path -LiteralPath $commandPath
                 $commandPath = (Resolve-Path -LiteralPath $commandPath).ProviderPath
             }
-        } 
-        
+        }
+
         if (!$exists) {
             throw "'$commandPath' cannot be found."
         }
-    } 
+    }
     else {
         $commandPath = (Resolve-Path -LiteralPath $commandPath).ProviderPath
     }
@@ -124,7 +124,7 @@ function Start-ExternalProcess {
     $process.StartInfo.RedirectStandardOutput = $true
     $process.StartInfo.RedirectStandardError = $true
     $process.StartInfo.RedirectStandardInput = $true
-    
+
     if ($WorkingDirectory) {
         $process.StartInfo.WorkingDirectory = $WorkingDirectory
     }
@@ -149,17 +149,17 @@ function Start-ExternalProcess {
         $isStringPresenceError = $false
 
         $process.StartInfo.Arguments = $ArgumentList
-        
+
         [void]$process.Start()
-    
+
         $process.BeginOutputReadLine()
         $process.BeginErrorReadLine()
 
         $getEventLogParams = @{
-            OutputDataSourceIdentifier=$outputDataSourceIdentifier;
-            ErrorDataSourceIdentifier=$errorDataSourceIdentifier;
-            Quiet=$Quiet;
-            IgnoreOutputRegex=$IgnoreOutputRegex
+            OutputDataSourceIdentifier = $outputDataSourceIdentifier;
+            ErrorDataSourceIdentifier  = $errorDataSourceIdentifier;
+            Quiet                      = $Quiet;
+            IgnoreOutputRegex          = $IgnoreOutputRegex
         }
 
         if ($Output -or ($Quiet -and $ReportOutputOnError)) {
@@ -174,7 +174,7 @@ function Start-ExternalProcess {
             $getEventLogParams["FailOnStringPresence"] = $FailOnStringPresence
         }
 
-        $validateErrorScript = { 
+        $validateErrorScript = {
             switch ($_) {
                 'StandardError' { $isStandardError = $true }
                 'StringPresenceError' { $isStringPresenceError = $true }
@@ -193,11 +193,12 @@ function Start-ExternalProcess {
             $secondsPassed += 1
         }
         Write-EventsToLog @getEventLogParams | Where-Object -FilterScript $validateErrorScript
-    } finally {
+    }
+    finally {
         Unregister-Event -SourceIdentifier ExternalProcessOutput
         Unregister-Event -SourceIdentifier ExternalProcessError
-    } 
-    
+    }
+
     if ($Output) {
         [void]($Output.Value = $stdOut)
     }
@@ -209,10 +210,10 @@ function Start-ExternalProcess {
     $errMsg = ''
     if ($CheckLastExitCode -and $process.ExitCode -ne 0) {
         $errMsg = "External command failed with exit code '$($process.ExitCode)'."
-    } 
+    }
     elseif ($CheckStdErr -and $isStandardError) {
         $errMsg = "External command failed - stderr Output present"
-    } 
+    }
     elseif ($isStringPresenceError) {
         $errMsg = "External command failed - stdout contains string '$FailOnStringPresence'"
     }

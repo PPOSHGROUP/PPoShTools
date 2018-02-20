@@ -1,5 +1,5 @@
 function Test-ColumnIsValid {
-	
+
     <#
       .SYNOPSIS
       Validates a column value in a single CSV row.
@@ -7,7 +7,7 @@ function Test-ColumnIsValid {
       .DESCRIPTION
       It is useful in Get-CsvData / Get-ValidationRules to validate columns read from CSV row.
       It returns empty array if the value is valid, or array of error messages if it's invalid.
-    
+
       .EXAMPLE
       $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'Login' -NonEmpty -NotContains '?', ' '
       $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'Name' -NonEmpty -NotContains '?'
@@ -20,11 +20,11 @@ function Test-ColumnIsValid {
 		# CSV row (or any other PSCustomObject).
 		[Parameter(Mandatory = $true)]
 		[PSCustomObject]$Row,
-		
+
 		# Name of the column which will be validated.
 		[Parameter(Mandatory = $true)]
 		[string]$ColumnName,
-		
+
 		# If $true, it will be asserted the column value is not empty.
 		[Parameter(Mandatory = $false)]
 		[switch]$NonEmpty,
@@ -32,7 +32,7 @@ function Test-ColumnIsValid {
         # If specified, it will be asserted the column value does not contain any of the specified string.
         [Parameter(Mandatory = $false)]
         [string[]]$NotContains,
-		
+
 		# If specified, it will be asserted the column value contain any of the specified string.
 		[Parameter(Mandatory = $false)]
 		[string[]]$Match,
@@ -44,7 +44,7 @@ function Test-ColumnIsValid {
         # If specified, it will be asserted the column value can be converted to a date using specified format.
         [Parameter(Mandatory = $false)]
         [string]$DateFormat,
-        
+
         # If specified, it will be asserted the column value is specified lenght.
         [Parameter(Mandatory = $false)]
         [int]$LengthMax
@@ -54,12 +54,13 @@ function Test-ColumnIsValid {
 
     try {
         $value = $Row.$ColumnName
-    } catch {
+    }
+    catch {
         $value = $null
     }
 
     if (!$value) {
-        if ($NonEmpty) { 
+        if ($NonEmpty) {
             $errors += "$ColumnName is missing"
         }
         return $errors
@@ -108,6 +109,6 @@ function Test-ColumnIsValid {
           $errors += "$ColumnName has invalid value ('$value') - string length is greater then: '$LengthMax'"
         }
     }
-    
+
     return $errors
 }

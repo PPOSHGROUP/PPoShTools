@@ -33,7 +33,8 @@ function ConvertTo-UncPath {
 				$RemoteFilePathDrive = ($LocalFilePath | Split-Path -Qualifier).TrimEnd(':')
 				"\\$Computer\$RemoteFilePathDrive`$$($LocalFilePath | Split-Path -NoQualifier)"
 			}
-		} catch {
+		}
+		catch {
 			Write-Log -Error -Message $_.Exception.Message
 		}
 	}

@@ -58,14 +58,14 @@ function Write-EventsToLog {
     # note: sometimes 'Collection was modified' is thrown by Get-Event.
     # Tried storing events in a hashset and removing them later in a loop, but it doesn't seem to help.
     # $eventIds = New-Object System.Collections.Generic.HashSet[System.String]
-    
+
     try {
         Get-Event -SourceIdentifier $OutputDataSourceIdentifier -ErrorAction SilentlyContinue | ForEach-Object {
             if ($_.SourceEventArgs.Data -and (!$IgnoreOutputRegex -or $_.SourceEventArgs.Data -inotmatch $IgnoreOutputRegex)) {
                 if (!$Quiet) {
                     Write-Log -Info ("[STDOUT] " + $_.SourceEventArgs.Data) -NoHeader
                 }
-            
+
                 if ($FailOnStringPresence -and $_.SourceEventArgs.Data -imatch $FailOnStringPresence) {
                     $error = "StringPresenceError"
                 }
@@ -77,7 +77,7 @@ function Write-EventsToLog {
             Remove-Event -EventIdentifier $_.EventIdentifier -ErrorAction SilentlyContinue
             #[void]($eventIds.Add($_.EventIdentifier))
         }
-    
+
         Get-Event -SourceIdentifier $ErrorDataSourceIdentifier -ErrorAction SilentlyContinue | ForEach-Object {
             if ($_.SourceEventArgs.Data -and (!$IgnoreOutputRegex -or $_.SourceEventArgs.Data -inotmatch $IgnoreOutputRegex)) {
                 if (!$Quiet) {
@@ -91,12 +91,13 @@ function Write-EventsToLog {
             Remove-Event -EventIdentifier $_.EventIdentifier -ErrorAction SilentlyContinue
             #[void]($eventIds.Add($_.EventIdentifier))
         }
-    } catch {
+    }
+    catch {
       Write-Log -Warn ("Couldn't get events: {0}" -f $_)
     }
 
     <#try {
-        # remove processed events from event queue       
+        # remove processed events from event queue
         foreach ($eventId in $eventIds) {
             Remove-Event -EventIdentifier $eventId -ErrorAction SilentlyContinue
         }

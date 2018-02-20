@@ -5,12 +5,12 @@ function Get-CsvData {
         Reads CSV file using specific encoding and running optional Validation and Transformation rules.
 
     .DESCRIPTION
-        After CSV file is read, Validation phase is run, that is for each row $CsvValidationRules scriptblock is invoked, which returns array of string: 
+        After CSV file is read, Validation phase is run, that is for each row $CsvValidationRules scriptblock is invoked, which returns array of string:
             - if the array is empty it is assumed the row is valid.
             - if the array is non-empty, it is assumed the row is invalid and the strings will be displayed after the Validation phase.
         Then, Transformation phase is run, that is for each row $CsvTransformationRules scriptblock is invoked, which returns a hashtable that is then
-        passed as a final result.       
-    
+        passed as a final result.
+
     .EXAMPLE
     function Get-ValidationRules {
 
@@ -31,7 +31,7 @@ function Get-CsvData {
         $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'Name' -NonEmpty -NotContains '?'
         $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'First Name' -NonEmpty -NotContains '?', ' '
         $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'Last Name' -NonEmpty -NotContains '?'
-    
+
         return $errors
     }
 
@@ -53,7 +53,7 @@ function Get-CsvData {
             Name = Remove-DiacriticChars -String (($CsvRow.'Name'))
             FirstName = Remove-DiacriticChars -String (($CsvRow.'First Name'))
             LastName = Remove-DiacriticChars -String (($CsvRow.'Last Name'))
-            Login = $CsvRow.Login 
+            Login = $CsvRow.Login
         }
 
         return $result
@@ -102,8 +102,8 @@ function Get-CsvData {
     }
 
     $tempFileName = ''
-    try { 
-        
+    try {
+
         if ($CustomEncoding) {
             $inputEncodingObj = [System.Text.Encoding]::GetEncoding($CustomEncoding)
             $outputEncodingObj = [System.Text.Encoding]::GetEncoding('UTF-8')
@@ -112,7 +112,7 @@ function Get-CsvData {
             $text = [System.IO.File]::ReadAllText($CsvPath, $inputEncodingObj)
             [System.IO.File]::WriteAllText($tempFileName, $text, $outputEncodingObj)
             $csvFileToRead = $tempFileName
-        } 
+        }
         else {
             $csvFileToRead = $CsvPath
         }
@@ -126,7 +126,7 @@ function Get-CsvData {
 
         $emptyRows = @()
         $rowNum = 2
-        foreach ($row in $inputData) { 
+        foreach ($row in $inputData) {
             $isRowEmpty = $true
             foreach ($prop in $row.PSObject.Properties.Name) {
                 $row.$prop = $row.$prop.Trim()
@@ -139,7 +139,7 @@ function Get-CsvData {
             }
             $rowNum++
         }
-    
+
         if ($emptyRows) {
             Write-Log -Info "Ignoring empty row numbers: $($rowNum -join ', ')."
         }
@@ -156,9 +156,10 @@ function Get-CsvData {
                     continue
                 }
 
-                try { 
+                try {
                     $errors = Invoke-Command -ScriptBlock $CsvValidationRules -ArgumentList $row, $rowNum
-                } catch {
+                }
+                catch {
                     Write-ErrorRecord
                 }
                 foreach ($err in $errors) {
@@ -166,7 +167,7 @@ function Get-CsvData {
                 }
                 $rowNum++
             }
-    
+
             if ($errorArray) {
                 $msg = "`r`n" + ($errorArray -join "`r`n")
                 Write-Log -Error $msg
@@ -188,16 +189,16 @@ function Get-CsvData {
                     $ignored++
                     continue
                 }
-                try { 
+                try {
                     $resultRow = Invoke-Command -ScriptBlock $CsvTransformRules -ArgumentList $row, $rowNum
-                } 
+                }
                 catch {
                     Write-ErrorRecord -ErrorRecord $_
                 }
-                if ($resultRow) { 
+                if ($resultRow) {
                     [void]($resultArray.Add($resultRow))
                     $added++
-                } 
+                }
                 else {
                     $ignored++
                 }
@@ -205,11 +206,12 @@ function Get-CsvData {
             }
             Write-Log -Info "CSV file read successfully ($added rows returned, $ignored rows ignored)."
             return $resultArray
-        } 
+        }
         else {
             return $inputData
         }
-    } finally {
+    }
+    finally {
         if ($tempFileName -and (Test-Path -Path $tempFileName)) {
             Remove-Item -Path $tempFileName -Force
         }
