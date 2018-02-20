@@ -1,4 +1,4 @@
-function New-PSCustomSession {
+function New-PSSessionCustom {
     <#
     .SYNOPSIS
     Creates PS Session object depends on parameters passed
@@ -16,8 +16,8 @@ function New-PSCustomSession {
     PowerShell Configuration name to use (JEA).
 
     .EXAMPLE
-    New-PSCustomSession -ComputerName 'SomeServer' -Credential (Get-Credential)
-    Will use {objectivity\mczerniawski_admin} to create PSSession to computer {SomeServer}
+    New-PSSessionCustom -ComputerName 'SomeServer' -Credential (Get-Credential)
+    Will use {SomeDomain\SomeUser} to create PSSession to computer {SomeServer}
     Created PSSession to computer {SomeServer}
     ```
     Id Name            ComputerName    ComputerType    State         ConfigurationName     Availability
@@ -26,7 +26,7 @@ function New-PSCustomSession {
     ```
 
     .OUTPUTS
-    Will output PSSession object 
+    Will output PSSession object
     #>
 
     [CmdletBinding()]
