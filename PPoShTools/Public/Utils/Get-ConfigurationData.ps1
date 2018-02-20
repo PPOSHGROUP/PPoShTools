@@ -40,7 +40,7 @@ function Get-ConfigurationData {
     [string[]]
     $ConfigurationPath,
 
-    [Parameter(Mandatory = $false, HelpMessage = 'Select output type',Position = 0)]
+    [Parameter(Mandatory = $false, HelpMessage = 'Select output type',Position = 1)]
     [ValidateSet('PSObject','HashTable')]
     [string]
     $OutputType='HashTable'
