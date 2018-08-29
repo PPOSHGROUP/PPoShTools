@@ -5,15 +5,15 @@ function Get-ConfigurationData {
 
       .DESCRIPTION
       Currently JSON (.json) and PowerShell Data (.psd1) are supported.
-      For JSON files possible output is hashtable (default) and PSObject.
-      For PSD1 files only PSObject is currently supported.
+      For JSON files possible output is Hashtable (default) and PSObject.
+      For PSD1 files only Hashtable is currently supported.
       Using helpers function will return an object data from given configuration file
 
       .PARAMETER ConfigurationPath
       Path to JSON or psd1 file
 
       .EXAMPLE
-      Get-ConfigurationData -ConfigurationPath C:\SomePath\Config.json -OutputType HashTable
+      Get-ConfigurationData -ConfigurationPath C:\SomePath\Config.json -OutputType Hashtable
       Will read content of Config.json file and convert it to a HashTable.
 
       .EXAMPLE
@@ -25,19 +25,17 @@ function Get-ConfigurationData {
       Will read content of Config.psd1 file and return it as a HashTable.
 
       .INPUTS
-      Accepts string as paths to JSON or PSD1 files
+      Accepts string as paths to JSON or PSD1 files or folders with files
 
       .OUTPUTS
       Outputs a hashtable of key/value pair or PSObject.
   #>
 
   [CmdletBinding()]
-  [OutputType([Hashtable])]
   param (
-    [Parameter(Mandatory = $true, HelpMessage = 'Provide path for configuration file to read', Position = 0 )]
-    [ValidateScript({Test-Path -Path $_ -PathType Leaf })]
-
-    [string[]]
+    [Parameter(Mandatory, HelpMessage = 'Provide path for configuration file to read', Position = 0 )]
+    [ValidateScript({Test-Path -Path $_})]
+    [System.String[]]
     $ConfigurationPath,
 
     [Parameter(Mandatory = $false, HelpMessage = 'Select output type',Position = 1)]
@@ -46,19 +44,42 @@ function Get-ConfigurationData {
     $OutputType='HashTable'
 
   )
-  process {
-    foreach ($configPath in $ConfigurationPath) {
-        if($configPath -match '.json') {
-            if($PSBoundParameters.ContainsValue('HashTable')){
-              (ConvertTo-HashtableFromJSON -Path $configPath)
-            }
-            elseif($PSBoundParameters.ContainsValue('PSObject')){
-              (ConvertTo-PSObjectFromJSON -Path $configPath)
-            }
+  begin {
+    $includeParams =  '*.psd1','*.json'
+  }
+  process{
+    foreach ($path in $ConfigurationPath) {
+      #-include only supported if -path to folder includes \* at the end
+      #check if given $ConfigurationPath is a directory
+      $pathType = Get-Item -Path $path
+      switch($pathType.PSIsContainer) {
+        $true {
+          $configurationFile = Get-ChildItem -Path "$($path)\*" -Include $includeParams
         }
-        if($configPath -match '.psd1') {
-          Import-LocalizedData -BaseDirectory (Split-Path $ConfigurationPath -Parent) -FileName (Split-Path $ConfigurationPath -Leaf)
+        $false {
+          $configurationFile = Get-ChildItem -path $ConfigurationPath -Include $includeParams
         }
+      }
+      foreach ($file in $configurationFile) {
+        #switch for different files supported
+        switch ($file) {
+          {$PSItem -match '.json'} {
+            #switch for different file output
+            switch($OutputType){
+              'HashTable' {
+                ConvertTo-HashtableFromJSON -Path $file
+               }
+              'PSObject' {
+                ConvertTo-PSObjectFromJSON -Path $file
+               }
+            }
+          }
+          {$PSItem -match '.psd1'} {
+            Write-Log -Info -Message "Reading configuration file from {$PSItem}"
+            Import-LocalizedData -BaseDirectory (Split-Path $file -Parent) -FileName (Split-Path $file -Leaf)
+          }
+        }
+      }
     }
   }
 }
