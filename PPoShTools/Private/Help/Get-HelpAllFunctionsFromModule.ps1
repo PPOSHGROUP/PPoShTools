@@ -30,6 +30,7 @@ function Get-HelpAllFunctionsFromModule {
 
     $result = New-Object -TypeName System.Collections.ArrayList
     foreach ($ps1File in $allPs1Files) {
+        Write-Host "psfile $ps1File"
         $funcName = (Split-Path -Path $ps1File -Leaf).Replace('.ps1', '')
         $cmd = Get-Command -Module $ModuleName -Name $funcName -ErrorAction SilentlyContinue
         if ($cmd) {

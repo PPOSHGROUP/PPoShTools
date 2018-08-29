@@ -13,7 +13,7 @@ function New-MarkdownDoc {
     Base Git url to generate links to source files.
 
     .EXAMPLE
-    New-MarkdownDocModule -ModuleName 'PSCI' -OutputPath '..\PSCI.wiki\api' -GitBaseUrl 'https://github.com/ObjectivityBSS/PSCI/tree/master'
+    New-MarkdownDoc -ModuleName 'PSCI' -OutputPath '..\PSCI.wiki\api' -GitBaseUrl 'https://github.com/ObjectivityBSS/PSCI/tree/master'
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Module')]
@@ -40,9 +40,9 @@ function New-MarkdownDoc {
         $DirectoryPath = (Resolve-Path -LiteralPath $DirectoryPath).ProviderPath
         $ModulePath = $DirectoryPath
     }
-    
+
     $ModuleName = Split-Path -Path $ModulePath -Leaf
-    if ((Test-Path -Path $OutputPath)) { 
+    if ((Test-Path -Path $OutputPath)) {
         Write-Log -Info "Deleting directory '$OutputPath'"
         Remove-Item -Path $OutputPath -Recurse -Force
     }
@@ -52,16 +52,16 @@ function New-MarkdownDoc {
     [void]($OutputIndexString.Append("## Module $ModuleName`r`n"))
 
     if ($PSCmdlet.ParameterSetName -eq 'Directory') {
-        $functionsToDocument = Get-AllFunctionsFromDirectory -Path $DirectoryPath
-    } 
-    else { 
+        $functionsToDocument = Get-HelpAllFunctionsFromDirectory -Path $DirectoryPath
+    }
+    else {
         $functionsToDocument = Get-HelpAllFunctionsFromModule -ModulePath $ModulePath -ModuleName $ModuleName
     }
     foreach ($funcInfo in $functionsToDocument) {
         $outputString = Generate-MarkdownForFunction -FunctionInfo $funcInfo -OutputIndexString $outputIndexString -ModulePath $ModulePath -ModuleName $moduleName -GitBaseUrl $GitBaseUrl
-        
+
         $outputFilePath = Join-Path -Path $OutputPath -ChildPath "$($funcInfo.FunctionName).md"
-        $outputString.ToString() | Out-File -FilePath $outputFilePath  
+        $outputString.ToString() | Out-File -FilePath $outputFilePath
     }
 
     $outputIndexPath = Join-Path -Path $OutputPath -ChildPath "$ModuleName.md"
