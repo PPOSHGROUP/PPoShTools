@@ -12,6 +12,7 @@ function Get-HelpAllFunctionsFromModule {
     .EXAMPLE
     $functionsToDocument = Get-HelpAllFunctionsFromModule -ModulePath $ModulePath -ModuleName $ModuleName
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '')]
     [CmdletBinding()]
     [OutputType([object[]])]
     param(

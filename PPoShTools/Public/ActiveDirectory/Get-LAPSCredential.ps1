@@ -12,6 +12,7 @@ function Get-LAPSCredential {
     --------                                  --------
     SomeComputer\Administrator System.Security.SecureString
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $True,
