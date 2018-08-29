@@ -22,7 +22,7 @@ function Get-LAPSCredential {
     )
     Process {
         Write-Log -Info -Message "Retrieving LAPS Password for Computer {$ComputerName}"
-        $LAPSPassword = Get-AdmPwdPassword -ComputerName $ComputerName -ErrorAction SilentlyContinue
+        $LAPSPassword = (Get-AdmPwdPassword -ComputerName $ComputerName -ErrorAction SilentlyContinue).Password
         If ($LAPSPassword) {
             Write-Log -Info -Message "Found LAPS Password for Computer {$ComputerName}"
             $LocalAdminPassword = ConvertTo-SecureString -String $LAPSPassword -AsPlainText -Force
