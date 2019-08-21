@@ -51,7 +51,7 @@ function Test-ColumnIsValid {
         
         # If specified, it will be asserted the column value does not starts with any of the specified string.
         [Parameter(Mandatory = $false)]
-        [string[]]$NotStarsWith,
+        [string[]]$NotStartsWith,
         
         # If specified, it will be asserted the column value does not ends with any of the specified string.
         [Parameter(Mandatory = $false)]
@@ -122,9 +122,9 @@ function Test-ColumnIsValid {
         }
     }
     
-    if ($NotStarsWith) {
+    if ($NotStartsWith) {
         $valueTemp = [char[]]$value
-        foreach ($illegalChar in $NotStarsWith) {
+        foreach ($illegalChar in $NotStartsWith) {
             if ($valueTemp[0] -ieq $illegalChar) {
                 $errors += "$ColumnName has invalid value ('$value') - starts with illegal character: '$illegalChar'"
             }
