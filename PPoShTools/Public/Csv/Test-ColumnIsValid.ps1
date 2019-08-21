@@ -13,6 +13,7 @@ function Test-ColumnIsValid {
       $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'StartDate' -DateFormat 'yyyy-MM-dd'
       $errors += Test-ColumnIsValid -Row $CsvRow -ColumnName 'Gender' -ValidSet '', 'F', 'M'
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSPlaceCloseBrace', '')]
     [CmdletBinding()]
     [OutputType([string[]])]
     param (
