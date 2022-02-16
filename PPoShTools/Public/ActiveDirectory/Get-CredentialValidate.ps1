@@ -19,7 +19,7 @@
     	$Credentials = Get-Credential
     	Get-CredentialValidate -Credential $Credentials
 		Check credential specify as parameter and if correct pass them by.
-  #>
+	#>
 
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSPlaceCloseBrace', '')]
 	[CmdletBinding(PositionalBinding = $false)]
@@ -107,6 +107,7 @@
 		$UserName = $Credential.UserName
 		$Password = $Credential.GetNetworkCredential().Password
 		$Check = (New-Object System.DirectoryServices.DirectoryEntry($DomainADSI, $UserName, $Password)).distinguishedName
+
 	} while ( -not $Check -or -not $Password )
 
 	Write-Verbose -Message "Login: $UserName, Password: $Password"
