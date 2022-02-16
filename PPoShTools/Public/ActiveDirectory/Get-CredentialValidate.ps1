@@ -21,6 +21,7 @@
 		Check credential specify as parameter and if correct pass them by.
   #>
 
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSPlaceCloseBrace', '')]
 	[CmdletBinding(PositionalBinding = $false)]
 	[OutputType([PSCredential])]
 	param
