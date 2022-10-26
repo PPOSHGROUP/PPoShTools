@@ -37,7 +37,7 @@ Function Set-LogConfiguration {
     )
 
     Begin { 
-        if (!(Get-Variable -Scope Script -Name LogConfiguration -ErrorAction SilentlyContinue)) {
+        if (!(Get-Variable -Scope Script -Name LogConfiguration -ErrorAction Ignore)) {
             $Script:LogConfiguration = [PSCustomObject]@{
                 LogLevel = 'Info';
                 LogFile = $null;
